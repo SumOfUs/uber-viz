@@ -2,10 +2,12 @@
 title: How Uber Rolls
 ---
 <style>
-
+body {
+  background: black;
+}
 .states {
-  fill: #ccc;
-  stroke: #fff;
+  fill: #333;
+  stroke: #555;
 }
 .issue-icon {
   background-image: url('/images/uber-sprite.png');
@@ -65,6 +67,28 @@ var cityCoordinates = {
   massachusetts: [-71.9252, 42.3771]
 };
 
+var groupRows = function(rows) {
+  return _.values(_.groupBy(rows, function(row) { return row[0] }));
+}
+
+
+rows = [
+  ['austin', -97.7431, 30.2672, 'Regulation '],
+  ['boston', -71.0589, 42.3601, 'Worker classification'],
+  ['boston', -71.0589, 42.3601, 'Legacy industry'],
+  ['california', -119.4494, 37.1661, 'Data issues'],
+  ['chicago', -87.6298, 41.8781, 'Lobbying'],
+  ['cleveland', -81.6944, 41.4993, 'Regulation'],
+  ['denver', -104.9903, 39.7392, 'Worker classification'],
+  ['detroit', -83.0458, 42.3314, 'Predatory finance'],
+  ['detroit', -83.0458, 42.3314, 'Worker classification'],
+  ['fort_worth', -97.3308, 32.7555, 'Worker classification'],
+  ['houston', -95.3698, 29.7604, 'Legacy industry'],
+  ['illinois', -89.503639, 39.739306, 'Legacy industry'],
+  ['massachusetts', -71.9252, 42.3771, 'Legacy industry'],
+];
+// console.log(groupRows(rows));
+
 d3.json("/javascripts/us.json", function(error, us) {
 
   svg.append("path")
@@ -72,14 +96,31 @@ d3.json("/javascripts/us.json", function(error, us) {
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
 
-  svg.selectAll("foreignObject")
-    .data(_.values(cityCoordinates)).enter()
-    .append("foreignObject")
-    .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
-    .attr("y", function (d) { return projection(d)[1]; })
-    .attr('class', 'example')
-      .append("xhtml:div")
-      .attr('class', 'issue-icon');
+  // svg.selectAll("foreignObject")
+  //   .data(_.values(cityCoordinates)).enter()
+  //   .append("foreignObject")
+  //   .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
+  //   .attr("y", function (d) { return projection(d)[1]; })
+  //   .attr('class', 'example')
+  //     .append("xhtml:div")
+  //     .attr('class', 'issue-icon');
+
+  svg.selectAll('circle')
+    .data(groupRows(rows)).enter()
+    .append('circle')
+    .attr("cx", function (group) { row = group[0]; console.log(row[1], row[2]); return projection([row[1], row[2]])[0]; })
+    .attr("cy", function (group) { row = group[0]; return projection([row[1], row[2]])[1]; })
+    .attr('r', function(group) { return group.length * 8; })
+    .attr('fill', 'blue')
+
+  // svg.selectAll("foreignObject")
+  //   .data(_.values(cityCoordinates)).enter()
+  //   .append("foreignObject")
+  //   .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
+  //   .attr("y", function (d) { return projection(d)[1]; })
+  //   .attr('class', 'example')
+  //     .append("xhtml:div")
+  //     .attr('class', 'issue-icon');
 });
 
 </script>
