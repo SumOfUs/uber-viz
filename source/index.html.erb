@@ -9,6 +9,15 @@ body {
   fill: #333;
   stroke: #555;
 }
+#stories-table {
+  background: #333;
+  width: 520px;
+  margin-top: 20px;
+  margin-left: 280px;
+}
+#stories-table td {
+  border: 1px solid #555;
+}
 .issue-icon {
   background-image: url('/images/uber-sprite.png');
 
@@ -17,11 +26,14 @@ body {
 }
 .map-graphic {
   position: relative;
+  height: 500px;
+  width: 800px;
+  overflow: hidden;
 }
 .map-graphic__component {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -80px;
 }
 #map-bubbles-chart .chart-body {
   transform: translateX(0px) translateY(-10px);
@@ -37,17 +49,30 @@ g.axis {
 }
 #type-chart {
   position: absolute;
-  top: 520px;
-  left: 60px;
+  top: 510px;
+  left: -10px;
+}
+.uber-viz {
+  width: 800px;
+  min-height: 1000px;
+  margin: 20px auto;
+  overflow: hidden;
+  position: relative;
+}
+body {
+  background-image: url('/images/bg-tile.png');
+  background-color: #161616;
 }
 </style>
 
-<div class="map-graphic">
-  <div id="map-bubbles-chart" class="map-graphic__component"></div>
-  <div id="us-states-map" class="map-graphic__component"></div>
+<div class="uber-viz">
+  <div class="map-graphic">
+    <div id="map-bubbles-chart" class="map-graphic__component"></div>
+    <div id="us-states-map" class="map-graphic__component"></div>
+  </div>
+  <div id="type-chart"></div>
+  <div id="stories-table"></div>
 </div>
-<div id="type-chart"></div>
-<div id="stories-table"></div>
 
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js'></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -60,7 +85,7 @@ g.axis {
 var width = 960,
     height = 500;
 
-var projection = d3.geo.albersUsa();
+var projection = d3.geo.albers();
 var path = d3.geo.path()
     .projection(projection);
 
