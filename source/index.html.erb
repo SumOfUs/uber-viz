@@ -10,10 +10,9 @@ body {
   stroke: #555;
 }
 #stories-table {
-  background: #333;
-  width: 520px;
+  width: 100%
   margin-top: 20px;
-  margin-left: 280px;
+  margin-left: 0;
 }
 #stories-table td {
   border: 1px solid #555;
@@ -49,8 +48,8 @@ g.axis {
 }
 #type-chart {
   position: absolute;
-  top: 510px;
-  left: -10px;
+  top: 10px;
+  left: -160px;
 }
 .uber-viz {
   width: 800px;
@@ -72,7 +71,6 @@ g.axis {
   width: 230px;
   padding: 8px;
 }
-
 body {
   background-image: url('/images/bg-tile.png');
   background-color: #161616;
@@ -87,6 +85,19 @@ body {
   <div id="type-chart"></div>
   <div id="stories-table"></div>
 </div>
+
+<script type="text/template" id="incident-card-template">
+  <div class="incident-card">
+    <div class="incident-card__type">
+      {{ d.type }} - {{ d.location }}
+    </div>
+    <div class="incident-card__main">
+      <div class="incident-card__tagline">{{ d.tagline }}</div>
+      <div class="incident-card__summary">{{ d.summary }}</div>
+      <a href="{{ d.link_1 }}" class="incident-card__source">Source</a>
+    </div>
+  </div>
+</script>
 
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js'></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -141,7 +152,7 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
       p.count--;
       p.typeCounts[v.type]--;
       if (p.typeCounts[v.type] < 1) delete p.typeCounts[v.type];
-      p.taglines = _.omit(p.taglines, v.tagline);
+      p.taglines = _.difference(p.taglines, [v.tagline]);
       return p;
     },
     function () {
@@ -190,11 +201,18 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     .elasticX(true);
   ;
 
-  var table = dc.dataTable('#stories-table')
+  var incidentTemplate = d3.select('#incident-card-template').html();
+  _.templateSettings = {
+    interpolate: /\{\{(.+?)\}\}/g
+  };
+  var table = dc.dataGrid('#stories-table')
     .dimension(typeDimension)
     .group(function(d) { return d; })
     .size(100)
-    .columns(['location', 'type', 'tagline', 'summary'])
+    .html(function(d) {
+      console.log(d);
+      return _.template(incidentTemplate)({d: d});
+    });
   ;
 
   dc.renderAll();

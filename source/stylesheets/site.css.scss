@@ -3,3 +3,46 @@
 
 @import "dc_tooltip";
 
+
+.dc-grid-item {
+  background: #333;
+  color: #f0f0f0;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+  padding: 10px;
+  margin: 8px;
+  font-size: 14px;
+  border: 2px solid #555;
+  border-radius: 5px;
+  float: left;
+  max-width: 220px;
+}
+.dc-grid-group {
+  display: none;
+}
+.incident-card {
+  &__tagline {
+    font-size: 16px;
+    font-weight: bold;
+    margin: -5px 0 5px 0
+  }
+  &__type {
+    background-color: darkred;
+    padding: 6px 12px;
+    width: 100%;
+    position: relative;
+    top: -12px;
+    left: -12px;
+    border-radius: 5px 5px 0 0;
+  }
+  &__summary {
+    margin: 5px 0;
+  }
+  &__source {
+    color: skyblue;
+    text-decoration: none;
+    font-size: 12px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
