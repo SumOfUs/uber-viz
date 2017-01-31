@@ -28,6 +28,7 @@ body {
   height: 500px;
   width: 800px;
   overflow: hidden;
+  margin-left: 200px;
 }
 .map-graphic__component {
   position: absolute;
@@ -48,11 +49,11 @@ g.axis {
 }
 #type-chart {
   position: absolute;
-  top: 10px;
-  left: -160px;
+  top: 90px;
+  left: -20px;
 }
 .uber-viz {
-  width: 800px;
+  width: 1000px;
   min-height: 1000px;
   margin: 20px auto;
   overflow: hidden;
@@ -75,9 +76,17 @@ body {
   background-image: url('/images/bg-tile.png');
   background-color: #161616;
 }
+.uber-viz__title {
+  font-size: 30px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans;
+  color: #F0f0f0;
+  margin: 20px 10px;
+  font-weight: normal;
+}
 </style>
 
 <div class="uber-viz">
+  <h1 class="uber-viz__title">Why so many people are so mad at Uber</h1>
   <div class="map-graphic">
     <div id="map-bubbles-chart" class="map-graphic__component"></div>
     <div id="us-states-map" class="map-graphic__component"></div>
@@ -88,13 +97,13 @@ body {
 
 <script type="text/template" id="incident-card-template">
   <div class="incident-card">
-    <div class="incident-card__type">
+    <div class="incident-card__type" style="background-color: {{ color }}">
       {{ d.type }} - {{ d.location }}
     </div>
     <div class="incident-card__main">
       <div class="incident-card__tagline">{{ d.tagline }}</div>
       <div class="incident-card__summary">{{ d.summary }}</div>
-      <a href="{{ d.link_1 }}" class="incident-card__source">Source</a>
+      <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
     </div>
   </div>
 </script>
@@ -129,8 +138,23 @@ var typeSvg = d3.select('#type-chart').append('svg')
     .attr("width", 300)
     .attr("height", 400);
 
+var categoryColors = {
+  "Corporate citizenship": '#3182bd',
+  "Data issues": '#6baed6',
+  "Legacy industry": '#9ecae1',
+  "Lobbying": 'white',
+  "Pay": '#e6550d',
+  "Predatory finance": '#fd8d3c',
+  "Regulation": '#fdae6b',
+  "Tax": '#31a354',
+  "Worker classification": '#74c476'
+};
+var colorDomain = [];
+var colorRange = [];
+_.each(categoryColors, function(v, k) { colorDomain.push(k); colorRange.push(v); });
+
 d3.csv('/javascripts/uber-cities.csv', function(error, cities){
-  console.log(error, cities);
+  if (error) console.error(error);
 
   var ndx = crossfilter(cities);
   var locationDimension = ndx.dimension(function(d) { return d.location; });
@@ -166,7 +190,11 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     }
   );
   var typeDimension = ndx.dimension(function(d) { return d.type; });
-  var typeGroup = typeDimension.group();
+  var typeGroup = typeDimension.group().reduce(
+    function(p, v){ return p },
+    function(p, v){ return p },
+    function(){ return 100 }
+  );
 
   var mapBubbles = dc.bubbleChart('#map-bubbles-chart')
     .svg(d3.select('#map-bubbles-chart svg'))
@@ -189,16 +217,27 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
       taglines = '<li>'+p.value.taglines.join('</li><li>').slice(0,-4);
       return "<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4><ul>"+taglines+"</ul></div>";
     })
+    .colorAccessor(function(p) {
+      var max = _.chain(p.value.typeCounts).max().value();
+      type = _.chain(p.value.typeCounts).invert().value()[max];
+      return type;
+    })
+    .colors(d3.scale.ordinal().domain(colorDomain).range(colorRange))
+    .addFilterHandler(function(filters, filter){
+      filters.length = 0; // empty the array
+      filters.push(filter);
+      return filters;
+    })
     .renderLabel(false)
   ;
 
   var types = dc.rowChart('#type-chart')
     .svg(d3.select('#type-chart svg'))
-    .width(300)
+    .width(250)
     .height(400)
     .dimension(typeDimension)
     .group(typeGroup)
-    .elasticX(true);
+    .elasticX(false);
   ;
 
   var incidentTemplate = d3.select('#incident-card-template').html();
@@ -210,28 +249,14 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     .group(function(d) { return d; })
     .size(100)
     .html(function(d) {
-      console.log(d);
-      return _.template(incidentTemplate)({d: d});
+      return _.template(incidentTemplate)({d: d, color: categoryColors[d.type]});
     });
   ;
 
   dc.renderAll();
   dc.tooltipMixin(mapBubbles);
-  mapBubbles.tip.elements.on('mouseleave', null);
+  // mapBubbles.tip.elements.on('mouseleave', null);
 });
-
-// var icons = {
-//   "Data issues": '01 or hard drive icon or server icon'
-//   "Regulation": 'gavel or scroll'
-//   "Worker classification": 'checkmark'
-//   "Legacy industry": 'taxi car'
-//   "Lobbying": 'whispering'
-//   "Predatory finance": ''
-//   "Pay":
-//   "Corporate citizenship":
-//   "Tax":
-// };
-
 
 d3.json("/javascripts/us.json", function(error, us) {
 
