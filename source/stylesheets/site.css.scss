@@ -2,7 +2,88 @@
 @import "normalize";
 
 @import "dc_tooltip";
+.land {
+  fill: #fff;
+  stroke: #87b1c8;
+}
+#stories-table {
+  width: 100%;
+  margin-top: 20px;
+  margin-left: 0;
+}
+#stories-table td {
+  border: 1px solid #555;
+}
+.issue-icon {
+  background-image: url('/images/uber-sprite.png');
 
+  width: 100px;
+  height: 100px;
+}
+.map-graphic {
+  position: relative;
+  height: 600px;
+  width: 1000px;
+  overflow: hidden;
+}
+.map-graphic__component {
+  position: absolute;
+  top: 0;
+  // left: -80px;
+}
+#map-bubbles-chart .chart-body {
+  // transform: translateX(0px) translateY(-10px);
+}
+#map-bubbles-chart {
+  z-index: 99;
+}
+#world-map {
+  z-index: 10;
+  height: 440px;
+  overflow: hidden;
+  transform: translate(27px, 10px);;
+}
+g.axis {
+  display: none;
+}
+#type-chart {
+  position: absolute;
+  top: 90px;
+  left: -20px;
+}
+.uber-viz {
+  width: 1000px;
+  min-height: 1000px;
+  margin: 20px auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.bubble-chart__taglines h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+.bubble-chart__taglines ul {
+  font-size: 12px;
+  padding-left: 14px;
+}
+.tip {
+  width: 230px;
+  padding: 8px;
+}
+body {
+  background-image: url('/images/bg-tile.png');
+  background-color: #c3d8e3;
+  background-size: 30px 60px;
+  background-repeat: repeat;
+}
+.uber-viz__title {
+  font-size: 30px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans;
+  color: #F0f0f0;
+  margin: 20px 10px;
+  font-weight: normal;
+}
 
 .dc-grid-item {
   background: #333;
@@ -46,3 +127,4 @@
     }
   }
 }
+
