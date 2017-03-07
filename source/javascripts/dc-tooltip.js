@@ -67,6 +67,9 @@
                     _chart.tip.elements.each(function () {
                         var el = d3.select(this);
                         var title = el.select('title');
+                        if (title.empty()) {
+                          title = d3.select(this.parentNode).select('title');
+                        }
 
                         if (title.empty()) {
                             return false;

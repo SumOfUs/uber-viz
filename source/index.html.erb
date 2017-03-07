@@ -17,7 +17,7 @@ title: How Uber Rolls
       {{ d.category }} - {{ d.location }}
     </div>
     <div class="incident-card__main">
-      <div class="incident-card__tagline">{{ d.tagline }}</div>
+      <div class="incident-card__tagline">{{ d.tag_line }}</div>
       <div class="incident-card__summary">{{ d.summary }}</div>
       <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
     </div>
@@ -36,8 +36,8 @@ title: How Uber Rolls
 
 
 <script>
-var width = 960,
-    height = 500;
+var width = 1060,
+    height = 600;
 
 var projection = d3.geo.robinson();
 var path = d3.geo.path()
@@ -56,7 +56,7 @@ var categorySvg = d3.select('#category-chart').append('svg')
     .attr("height", 400);
 
 var categoryColors = {
-  "Corporate citizenship": '#000',
+  "Corporate citizenship": '#34a853',
   'Regulation and lobbying': '#0c0081',
   'Pay and worker treatment': '#df7c08'
 };
@@ -79,7 +79,7 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
       } else {
         p.categoryCounts[v.category] = 1;
       }
-      p.taglines = _.union(p.taglines, [v.tagline]);
+      p.taglines = _.union(p.taglines, [v.tag_line]);
       p.location = v.location;
       return p;
     },
@@ -87,7 +87,7 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
       p.count--;
       p.categoryCounts[v.category]--;
       if (p.categoryCounts[v.category] < 1) delete p.categoryCounts[v.category];
-      p.taglines = _.difference(p.taglines, [v.tagline]);
+      p.taglines = _.difference(p.taglines, [v.tag_line]);
       return p;
     },
     function () {
@@ -106,6 +106,15 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     function(p, v){ return p },
     function(){ return 100 }
   );
+
+  var colorBar = function(categoryCounts) {
+    var total = _.reduce(_.values(categoryCounts), function(a, b) { return a + b; }, 0);
+    var barHtml = _.map(_.keys(categoryCounts), function(k) {
+      var percent = 100 * categoryCounts[k] / total;
+      return "<div style='background-color: "+categoryColors[k]+"; width: "+percent+"%;''></div>";
+    }).join('');
+    return "<div class='bubble-chart__tooltip-color-bar'>"+barHtml+"</div>";
+  };
 
   var mapBubbles = dc.bubbleChart('#map-bubbles-chart')
     .svg(d3.select('#map-bubbles-chart svg'))
@@ -126,8 +135,13 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     .y(d3.scale.linear().domain([-1 * height, 0]))
     .minRadius(3)
     .title(function(p) {
-      taglines = '<li>'+p.value.taglines.join('</li><li>').slice(0,-4);
-      return "<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4><ul>"+taglines+"</ul></div>";
+      if (p.value.taglines.length > 1) {
+        var taglines = '<ul><li>'+p.value.taglines.join('</li><li>')+'</li></ul>';
+      } else {
+        var taglines = '<div class="bubble-chart__single-tagline">'+p.value.taglines[0]+'</div>';
+      }
+      console.log(p.value.categoryCounts);
+      return colorBar(p.value.categoryCounts)+"<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4>"+taglines+"</div>";
     })
     .colorAccessor(function(p) {
       var max = _.chain(p.value.categoryCounts).max().value();
@@ -167,14 +181,13 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
 
   dc.renderAll();
   dc.tooltipMixin(mapBubbles);
-  // mapBubbles.tip.elements.on('mouseleave', null);
+  mapBubbles.tip.elements.on('mouseleave', null);
 });
 
 var g = mapSvg.append("g");
 
 d3.json("/javascripts/world-50m.json", function(error, world) {
   if (error) throw error;
-  console.log(world);
 
   g.append("path")
     .datum(topojson.merge(world, world.objects.countries.geometries))
