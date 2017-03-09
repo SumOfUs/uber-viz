@@ -2,12 +2,15 @@
 title: How Uber Rolls
 ---
 <div class="uber-viz">
-  <h1 class="uber-viz__title">Why so many people are so mad at Uber</h1>
-  <div class="map-graphic">
+  <div class="uber-viz__filter-bar filter-bar">
+    <div class="filter-bar__search-box">
+      <input type="text" name="search" id="filter-bar__search-input" placeholder="Where to?" />
+    </div>
+  </div>
+  <div class="uber-viz__map-graphic map-graphic">
     <div id="map-bubbles-chart" class="map-graphic__component"></div>
     <div id="world-map" class="map-graphic__component"></div>
   </div>
-  <div id="type-chart"></div>
   <div id="stories-table"></div>
 </div>
 
@@ -33,9 +36,11 @@ title: How Uber Rolls
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.1/dc.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
 <script src="/javascripts/dc-tooltip.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.js" async></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.css" />
 
-
-<script>
+<script type="text/javascript">
+(function(){
 var width = 1060,
     height = 600;
 
@@ -51,24 +56,52 @@ var bubbleSvg = d3.select('#map-bubbles-chart').append('svg')
     .attr("width", width)
     .attr("height", height);
 
-var categorySvg = d3.select('#category-chart').append('svg')
-    .attr("width", 300)
-    .attr("height", 400);
-
 var categoryColors = {
   "Corporate citizenship": '#34a853',
   'Regulation and lobbying': '#0c0081',
   'Pay and worker treatment': '#df7c08'
 };
+var currentCategories = {};
+
 var colorDomain = [];
 var colorRange = [];
 _.each(categoryColors, function(v, k) { colorDomain.push(k); colorRange.push(v); });
+
+var toggleCategory = function() {
+  var el = d3.select(this);
+  var label = el.attr('data-label');
+  var adding = !(currentCategories[label] === true);
+  currentCategories[label] = adding;
+  el.classed('filter-bar__category--selected', adding);
+}
+
+var renderCategories = function() {
+  var size = _.size(categoryColors) + 1;
+  var container = d3.select('.filter-bar');
+  var widthStyle = 'width: '+ (100 / size) + '%;';
+  _.each(_.keys(categoryColors), function(label) {
+    var category = container.append('div')
+      .attr('class', 'filter-bar__category')
+      .attr('style', widthStyle)
+      .attr('data-label', label);
+    category.append('div')
+      .attr('class', 'filter-bar__category-name')
+      .text(label);
+    category.append('div')
+      .attr('class', 'filter-bar__category-color')
+      .attr('style', 'background-color: '+categoryColors[label]+';');
+    category.on('click', toggleCategory);
+  });
+  container.select('.filter-bar__search-box').attr('style', widthStyle);
+}
+renderCategories();
 
 d3.csv('/javascripts/uber-cities.csv', function(error, cities){
   if (error) console.error(error);
 
   var ndx = crossfilter(cities);
   var locationDimension = ndx.dimension(function(d) { return d.location; });
+  var searchDimension = ndx.dimension(function(d) { return d.location; });
   var locationGroup = locationDimension.group().reduce(
     function (p, v) {
       if (p.lat !== v.lat) p.lat = v.lat;
@@ -101,11 +134,6 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     }
   );
   var categoryDimension = ndx.dimension(function(d) { return d.category; });
-  var categoryGroup = categoryDimension.group().reduce(
-    function(p, v){ return p },
-    function(p, v){ return p },
-    function(){ return 100 }
-  );
 
   var colorBar = function(categoryCounts) {
     var total = _.reduce(_.values(categoryCounts), function(a, b) { return a + b; }, 0);
@@ -140,7 +168,6 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
       } else {
         var taglines = '<div class="bubble-chart__single-tagline">'+p.value.taglines[0]+'</div>';
       }
-      console.log(p.value.categoryCounts);
       return colorBar(p.value.categoryCounts)+"<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4>"+taglines+"</div>";
     })
     .colorAccessor(function(p) {
@@ -157,21 +184,12 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     .renderLabel(false)
   ;
 
-  var categories = dc.rowChart('#category-chart')
-    .svg(d3.select('#category-chart svg'))
-    .width(250)
-    .height(400)
-    .dimension(categoryDimension)
-    .group(categoryGroup)
-    .elasticX(false);
-  ;
-
   var incidentTemplate = d3.select('#incident-card-template').html();
   _.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g
   };
   var table = dc.dataGrid('#stories-table')
-    .dimension(categoryDimension)
+    .dimension(locationDimension)
     .group(function(d) { return d; })
     .size(100)
     .html(function(d) {
@@ -179,21 +197,35 @@ d3.csv('/javascripts/uber-cities.csv', function(error, cities){
     });
   ;
 
+  var search = function() {
+    var value = this.value.length > 1 ? this.value : '';
+    var re = new RegExp(value, 'i');
+    searchDimension.filter(function(d) { return d.search(re) !== -1; });
+    dc.redrawAll();
+  }
+
+  d3.select('#filter-bar__search-input').on('awesomplete-selectcomplete', search);
+  d3.select('#filter-bar__search-input').on('keyup', search);
+
+  var autocomplete = new Awesomplete(document.getElementById('filter-bar__search-input'), {
+    list: _.uniq(_.map(cities, function(c) { return c.location; }))
+  });
+
   dc.renderAll();
   dc.tooltipMixin(mapBubbles);
-  mapBubbles.tip.elements.on('mouseleave', null);
+  // mapBubbles.tip.elements.on('mouseleave', null);
 });
 
-var g = mapSvg.append("g");
+var mapGroup = mapSvg.append("g");
 
 d3.json("/javascripts/world-50m.json", function(error, world) {
   if (error) throw error;
 
-  g.append("path")
+  mapGroup.append("path")
     .datum(topojson.merge(world, world.objects.countries.geometries))
     .attr("class", "land")
     .attr("d", path);
 
 });
-
+})();
 </script>
