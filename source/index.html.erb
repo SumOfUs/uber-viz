@@ -41,191 +41,215 @@ title: How Uber Rolls
 
 <script type="text/javascript">
 (function(){
-var width = 1060,
-    height = 600;
 
-var projection = d3.geo.robinson();
-var path = d3.geo.path()
-    .projection(projection);
 
-var mapSvg = d3.select("#world-map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-var bubbleSvg = d3.select('#map-bubbles-chart').append('svg')
-    .attr("width", width)
-    .attr("height", height);
-
-var categoryColors = {
-  "Corporate citizenship": '#34a853',
-  'Regulation and lobbying': '#0c0081',
-  'Pay and worker treatment': '#df7c08'
-};
-var currentCategories = {};
-
-var colorDomain = [];
-var colorRange = [];
-_.each(categoryColors, function(v, k) { colorDomain.push(k); colorRange.push(v); });
-
-var toggleCategory = function() {
-  var el = d3.select(this);
-  var label = el.attr('data-label');
-  var adding = !(currentCategories[label] === true);
-  currentCategories[label] = adding;
-  el.classed('filter-bar__category--selected', adding);
-}
-
-var renderCategories = function() {
-  var size = _.size(categoryColors) + 1;
-  var container = d3.select('.filter-bar');
-  var widthStyle = 'width: '+ (100 / size) + '%;';
-  _.each(_.keys(categoryColors), function(label) {
-    var category = container.append('div')
-      .attr('class', 'filter-bar__category')
-      .attr('style', widthStyle)
-      .attr('data-label', label);
-    category.append('div')
-      .attr('class', 'filter-bar__category-name')
-      .text(label);
-    category.append('div')
-      .attr('class', 'filter-bar__category-color')
-      .attr('style', 'background-color: '+categoryColors[label]+';');
-    category.on('click', toggleCategory);
-  });
-  container.select('.filter-bar__search-box').attr('style', widthStyle);
-}
-renderCategories();
-
-d3.csv('/javascripts/uber-cities.csv', function(error, cities){
-  if (error) console.error(error);
-
-  var ndx = crossfilter(cities);
-  var locationDimension = ndx.dimension(function(d) { return d.location; });
-  var searchDimension = ndx.dimension(function(d) { return d.location; });
-  var locationGroup = locationDimension.group().reduce(
-    function (p, v) {
-      if (p.lat !== v.lat) p.lat = v.lat;
-      if (p.long !== v.long) p.long = v.long;
-      p.count++;
-      if (p.categoryCounts.hasOwnProperty(v.category)) {
-        p.categoryCounts[v.category]++;
-      } else {
-        p.categoryCounts[v.category] = 1;
-      }
-      p.taglines = _.union(p.taglines, [v.tag_line]);
-      p.location = v.location;
-      return p;
+  var viz = {
+    width: 1060,
+    height: 600,
+    projection: d3.geo.robinson(),    
+    categoryColors: {
+      "Corporate citizenship": '#34a853',
+      'Regulation and lobbying': '#0c0081',
+      'Pay and worker treatment': '#df7c08'
     },
-    function (p, v) {
-      p.count--;
-      p.categoryCounts[v.category]--;
-      if (p.categoryCounts[v.category] < 1) delete p.categoryCounts[v.category];
-      p.taglines = _.difference(p.taglines, [v.tag_line]);
-      return p;
+    currentCategories: {},
+
+    initialize: function() {
+      viz.path = d3.geo.path().projection(viz.projection);
+
+      viz.mapSvg = d3.select("#world-map").append("svg")
+        .attr("width", viz.width)
+        .attr("height", viz.height);
+
+      viz.bubbleSvg = d3.select('#map-bubbles-chart').append('svg')
+        .attr("width", viz.width)
+        .attr("height", viz.height);
+
+      viz.renderCategories();
+      d3.csv('/javascripts/uber-cities.csv', viz.useCities);
+      d3.json("/javascripts/world-50m.json", viz.usePaths);
     },
-    function () {
-      return {
-        lat: null,
-        long: null,
-        categoryCounts: {},
-        taglines: [],
-        count: 0
+
+    toggleCategory: function() {
+      var el = d3.select(this);
+      var label = el.attr('data-label');
+      var adding = !(viz.currentCategories[label] === true);
+      viz.currentCategories[label] = adding;
+      el.classed('filter-bar__category--selected', adding);
+    },
+
+    renderCategories: function() {
+      var size = _.size(viz.categoryColors) + 1;
+      var container = d3.select('.filter-bar');
+      var widthStyle = 'width: '+ (100 / size) + '%;';
+      _.each(_.keys(viz.categoryColors), function(label) {
+        var category = container.append('div')
+          .attr('class', 'filter-bar__category')
+          .attr('style', widthStyle)
+          .attr('data-label', label);
+        category.append('div')
+          .attr('class', 'filter-bar__category-name')
+          .text(label);
+        category.append('div')
+          .attr('class', 'filter-bar__category-color')
+          .attr('style', 'background-color: '+viz.categoryColors[label]+';');
+        category.on('click', viz.toggleCategory);
+      });
+      container.select('.filter-bar__search-box').attr('style', widthStyle);
+    },
+
+    colorTooltip: function(categoryCounts) {
+      var total = _.reduce(_.values(categoryCounts), function(a, b) { return a + b; }, 0);
+      var barHtml = _.map(_.keys(categoryCounts), function(k) {
+        var percent = 100 * categoryCounts[k] / total;
+        return "<div style='background-color: "+viz.categoryColors[k]+"; width: "+percent+"%;''></div>";
+      }).join('');
+      return "<div class='bubble-chart__tooltip-color-bar'>"+barHtml+"</div>";
+    },
+
+    search: function(value) {
+      var value = value.length > 1 ? value : '';
+      var re = new RegExp(value, 'i');
+      viz.searchDimension.filter(function(d) { return d.search(re) !== -1; });
+      dc.redrawAll();
+    },
+
+    usePaths: function(error, world) {
+      if (error) throw error;
+
+      viz.mapSvg.append('g')
+        .append("path")
+        .datum(topojson.merge(world, world.objects.countries.geometries))
+        .attr("class", "land")
+        .attr("d", viz.path);
+    },
+
+    useCities: function(error, cities){
+      if (error) console.error(error);
+
+      viz.initCrossfilter(cities);
+      viz.initBubbles();
+      viz.initTable();
+      viz.initAutocomplete(cities);
+
+      dc.renderAll();
+      dc.tooltipMixin(viz.mapBubbles);
+      // mapBubbles.tip.elements.on('mouseleave', null);
+    },
+
+    initAutocomplete: function(cities) {
+      viz.autocomplete = new Awesomplete(document.getElementById('filter-bar__search-input'), {
+        list: _.uniq(_.map(cities, function(c) { return c.location; }))
+      });
+      d3.select('#filter-bar__search-input').on('awesomplete-selectcomplete', function() {
+        viz.search(this.value);
+      }).on('keyup', function() {
+        viz.search(this.value);
+      });
+    },
+
+    initCrossfilter: function(cities) {
+      viz.ndx = crossfilter(cities);
+      viz.locationDimension = viz.ndx.dimension(function(d) { return d.location; });
+      viz.searchDimension = viz.ndx.dimension(function(d) { return d.location; });
+      viz.locationGroup = viz.locationDimension.group().reduce(
+        function (p, v) {
+          if (p.lat !== v.lat) p.lat = v.lat;
+          if (p.long !== v.long) p.long = v.long;
+          p.count++;
+          if (p.categoryCounts.hasOwnProperty(v.category)) {
+            p.categoryCounts[v.category]++;
+          } else {
+            p.categoryCounts[v.category] = 1;
+          }
+          p.taglines = _.union(p.taglines, [v.tag_line]);
+          p.location = v.location;
+          return p;
+        },
+        function (p, v) {
+          p.count--;
+          p.categoryCounts[v.category]--;
+          if (p.categoryCounts[v.category] < 1) delete p.categoryCounts[v.category];
+          p.taglines = _.difference(p.taglines, [v.tag_line]);
+          return p;
+        },
+        function () {
+          return {
+            lat: null,
+            long: null,
+            categoryCounts: {},
+            taglines: [],
+            count: 0
+          };
+        }
+      );
+    },
+
+    initBubbles: function() {
+      var colorDomain= [], colorRange = [];
+      _.each(viz.categoryColors, function(v, k) {
+        colorDomain.push(k); colorRange.push(v);
+      });
+
+      viz.mapBubbles = dc.bubbleChart('#map-bubbles-chart')
+        .svg(d3.select('#map-bubbles-chart svg'))
+        .width(viz.width*1.08)
+        .height(viz.height*1.08)
+        .dimension(viz.locationDimension)
+        .group(viz.locationGroup)
+        .keyAccessor(function(p) {
+          projected = viz.projection([p.value.long, p.value.lat]);
+          return projected ? projected[0] : 0;
+        })
+        .valueAccessor(function(p) {
+          projected = viz.projection([p.value.long, p.value.lat]);
+          return projected ? -projected[1] : 0;
+        })
+        .radiusValueAccessor(function(p) { return p.value.count; })
+        .x(d3.scale.linear().domain([0, viz.width]))
+        .y(d3.scale.linear().domain([-1 * viz.height, 0]))
+        .minRadius(3)
+        .title(function(p) {
+          if (p.value.taglines.length > 1) {
+            var taglines = '<ul><li>'+p.value.taglines.join('</li><li>')+'</li></ul>';
+          } else {
+            var taglines = '<div class="bubble-chart__single-tagline">'+p.value.taglines[0]+'</div>';
+          }
+          return viz.colorTooltip(p.value.categoryCounts)+"<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4>"+taglines+"</div>";
+        })
+        .colorAccessor(function(p) {
+          var max = _.chain(p.value.categoryCounts).max().value();
+          category = _.chain(p.value.categoryCounts).invert().value()[max];
+          return category;
+        })
+        .colors(d3.scale.ordinal().domain(colorDomain).range(colorRange))
+        .addFilterHandler(function(filters, filter){
+          filters.length = 0; // empty the array
+          filters.push(filter);
+          return filters;
+        })
+        .renderLabel(false)
+      ;
+    },
+
+    initTable: function() {
+      var incidentTemplate = d3.select('#incident-card-template').html();
+      _.templateSettings = {
+        interpolate: /\{\{(.+?)\}\}/g
       };
+      var table = dc.dataGrid('#stories-table')
+        .dimension(viz.locationDimension)
+        .group(function(d) { return d; })
+        .size(100)
+        .html(function(d) {
+          return _.template(incidentTemplate)({
+            d: d,
+            color: viz.categoryColors[d.category]
+          });
+        });
+      ;
     }
-  );
-  var categoryDimension = ndx.dimension(function(d) { return d.category; });
-
-  var colorBar = function(categoryCounts) {
-    var total = _.reduce(_.values(categoryCounts), function(a, b) { return a + b; }, 0);
-    var barHtml = _.map(_.keys(categoryCounts), function(k) {
-      var percent = 100 * categoryCounts[k] / total;
-      return "<div style='background-color: "+categoryColors[k]+"; width: "+percent+"%;''></div>";
-    }).join('');
-    return "<div class='bubble-chart__tooltip-color-bar'>"+barHtml+"</div>";
-  };
-
-  var mapBubbles = dc.bubbleChart('#map-bubbles-chart')
-    .svg(d3.select('#map-bubbles-chart svg'))
-    .width(width*1.08)
-    .height(height*1.08)
-    .dimension(locationDimension)
-    .group(locationGroup)
-    .keyAccessor(function(p) {
-      projected = projection([p.value.long, p.value.lat]);
-      return projected ? projected[0] : 0;
-    })
-    .valueAccessor(function(p) {
-      projected = projection([p.value.long, p.value.lat]);
-      return projected ? -projected[1] : 0;
-    })
-    .radiusValueAccessor(function(p) { return p.value.count; })
-    .x(d3.scale.linear().domain([0, width]))
-    .y(d3.scale.linear().domain([-1 * height, 0]))
-    .minRadius(3)
-    .title(function(p) {
-      if (p.value.taglines.length > 1) {
-        var taglines = '<ul><li>'+p.value.taglines.join('</li><li>')+'</li></ul>';
-      } else {
-        var taglines = '<div class="bubble-chart__single-tagline">'+p.value.taglines[0]+'</div>';
-      }
-      return colorBar(p.value.categoryCounts)+"<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4>"+taglines+"</div>";
-    })
-    .colorAccessor(function(p) {
-      var max = _.chain(p.value.categoryCounts).max().value();
-      category = _.chain(p.value.categoryCounts).invert().value()[max];
-      return category;
-    })
-    .colors(d3.scale.ordinal().domain(colorDomain).range(colorRange))
-    .addFilterHandler(function(filters, filter){
-      filters.length = 0; // empty the array
-      filters.push(filter);
-      return filters;
-    })
-    .renderLabel(false)
-  ;
-
-  var incidentTemplate = d3.select('#incident-card-template').html();
-  _.templateSettings = {
-    interpolate: /\{\{(.+?)\}\}/g
-  };
-  var table = dc.dataGrid('#stories-table')
-    .dimension(locationDimension)
-    .group(function(d) { return d; })
-    .size(100)
-    .html(function(d) {
-      return _.template(incidentTemplate)({d: d, color: categoryColors[d.category]});
-    });
-  ;
-
-  var search = function() {
-    var value = this.value.length > 1 ? this.value : '';
-    var re = new RegExp(value, 'i');
-    searchDimension.filter(function(d) { return d.search(re) !== -1; });
-    dc.redrawAll();
   }
-
-  d3.select('#filter-bar__search-input').on('awesomplete-selectcomplete', search);
-  d3.select('#filter-bar__search-input').on('keyup', search);
-
-  var autocomplete = new Awesomplete(document.getElementById('filter-bar__search-input'), {
-    list: _.uniq(_.map(cities, function(c) { return c.location; }))
-  });
-
-  dc.renderAll();
-  dc.tooltipMixin(mapBubbles);
-  // mapBubbles.tip.elements.on('mouseleave', null);
-});
-
-var mapGroup = mapSvg.append("g");
-
-d3.json("/javascripts/world-50m.json", function(error, world) {
-  if (error) throw error;
-
-  mapGroup.append("path")
-    .datum(topojson.merge(world, world.objects.countries.geometries))
-    .attr("class", "land")
-    .attr("d", path);
-
-});
+  viz.initialize();
 })();
 </script>
