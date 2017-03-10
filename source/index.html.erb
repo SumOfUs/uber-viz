@@ -70,14 +70,6 @@ title: How Uber Rolls
       d3.json("/javascripts/world-50m.json", viz.usePaths);
     },
 
-    toggleCategory: function() {
-      var el = d3.select(this);
-      var label = el.attr('data-label');
-      var adding = !(viz.currentCategories[label] === true);
-      viz.currentCategories[label] = adding;
-      el.classed('filter-bar__category--selected', adding);
-    },
-
     renderCategories: function() {
       var size = _.size(viz.categoryColors) + 1;
       var container = d3.select('.filter-bar');
@@ -110,7 +102,22 @@ title: How Uber Rolls
     search: function(value) {
       var value = value.length > 1 ? value : '';
       var re = new RegExp(value, 'i');
-      viz.searchDimension.filter(function(d) { return d.search(re) !== -1; });
+      viz.searchDimension.filter(function(d) {
+        return d.search(re) !== -1;
+      });
+      dc.redrawAll();
+    },
+
+    toggleCategory: function() {
+      var el = d3.select(this);
+      var label = el.attr('data-label');
+      var adding = !(viz.currentCategories[label] === true);
+      viz.currentCategories[label] = adding;
+      el.classed('filter-bar__category--selected', adding);
+      var noneSelected = _.values(viz.currentCategories).indexOf(true) === -1;
+      viz.categoryDimension.filter(function(category){
+        return noneSelected || viz.currentCategories[category] === true;
+      });
       dc.redrawAll();
     },
 
@@ -152,6 +159,7 @@ title: How Uber Rolls
       viz.ndx = crossfilter(cities);
       viz.locationDimension = viz.ndx.dimension(function(d) { return d.location; });
       viz.searchDimension = viz.ndx.dimension(function(d) { return d.location; });
+      viz.categoryDimension = viz.ndx.dimension(function(d) { return d.category; });
       viz.locationGroup = viz.locationDimension.group().reduce(
         function (p, v) {
           if (p.lat !== v.lat) p.lat = v.lat;
