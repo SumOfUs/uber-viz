@@ -1,0 +1,15 @@
+dependencies:
+  pre:
+    - bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+    - pip install awscli
+test:
+  override:
+    - echo "test"
+deployment:
+  production:
+    branch: master
+    commands:
+      - bundle exec middleman build --verbose
+      - bundle exec middleman s3_sync
+      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
