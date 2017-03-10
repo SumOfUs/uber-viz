@@ -34,8 +34,9 @@ title: How Uber Rolls
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.1/dc.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.1/dc.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
-<script src="/javascripts/dc-tooltip.js"></script>
+<script type="text/javascript" src="/javascripts/dc-tooltip.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.js" async></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.1.1/masonry.pkgd.min.js" async></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.css" />
 
 <script type="text/javascript">
@@ -248,6 +249,12 @@ title: How Uber Rolls
         .dimension(viz.locationDimension)
         .group(function(d) { return d; })
         .size(100)
+        .on('renderlet', function() {
+          if (viz.masonry) viz.masonry.destroy();
+          viz.masonry = new Masonry('.dc-grid-top', {
+            columnWidth: 332
+          });
+        })
         .html(function(d) {
           return _.template(incidentTemplate)({
             d: d,
