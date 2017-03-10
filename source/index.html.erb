@@ -15,15 +15,14 @@ title: How Uber Rolls
 </div>
 
 <script type="text/template" id="incident-card-template">
-  <div class="incident-card">
-    <div class="incident-card__type" style="background-color: {{ color }}">
-      {{ d.category }} - {{ d.location }}
-    </div>
-    <div class="incident-card__main">
-      <div class="incident-card__tagline">{{ d.tag_line }}</div>
-      <div class="incident-card__summary">{{ d.summary }}</div>
-      <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
-    </div>
+  <div class="incident-card__top" style="background-color: {{ color }}">
+    <span class="incident-card__category">{{ d.category }}</span>
+    <span class="incident-card__location">{{ d.location }}</span>
+  </div>
+  <div class="incident-card__title">{{ d.tag_line }}</div>
+  <div class="incident-card__main">
+    <div class="incident-card__summary">{{ d.summary }}</div>
+    <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
   </div>
 </script>
 
