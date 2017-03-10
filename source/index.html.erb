@@ -53,6 +53,7 @@ title: How Uber Rolls
       'Pay and worker treatment': '#df7c08'
     },
     currentCategories: {},
+    mutuallyExclusiveCategories: true,
 
     initialize: function() {
       viz.path = d3.geo.path().projection(viz.projection);
@@ -112,6 +113,10 @@ title: How Uber Rolls
       var el = d3.select(this);
       var label = el.attr('data-label');
       var adding = !(viz.currentCategories[label] === true);
+      if (viz.mutuallyExclusiveCategories) {
+        viz.currentCategories = {};
+        d3.selectAll('.filter-bar__category--selected').classed('filter-bar__category--selected', false);
+      }
       viz.currentCategories[label] = adding;
       el.classed('filter-bar__category--selected', adding);
       var noneSelected = _.values(viz.currentCategories).indexOf(true) === -1;

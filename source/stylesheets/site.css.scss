@@ -86,6 +86,7 @@ h1, h2 , h3, h4, h5, h6 {
   padding: 13px 15px;
   font-family: $open-sans;
   font-weight: 300;
+  z-index: 200;
   h4 {
     margin: 0;
     font-size: 18px;
@@ -193,8 +194,7 @@ h1, h2 , h3, h4, h5, h6 {
     color: white;
     font-size: 13px;
     padding-top: 8px;
-    padding-bottom: 8px;
-    height: 30px;
+    padding-bottom: 7px;
     overflow: hidden;
   }
   &__category {
