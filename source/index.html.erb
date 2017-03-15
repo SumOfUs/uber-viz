@@ -68,6 +68,7 @@ title: How Uber Rolls
     },
     currentCategories: {},
     mutuallyExclusiveCategories: true,
+    searched: '',
 
     initialize: function() {
       viz.path = d3.geo.path().projection(viz.projection);
@@ -116,6 +117,7 @@ title: How Uber Rolls
 
     search: function(value) {
       var value = value.length > 1 ? value : '';
+      viz.searched = value;
       var re = new RegExp(value, 'i');
       viz.searchDimension.filter(function(d) {
         return d.search(re) !== -1;
@@ -256,7 +258,16 @@ title: How Uber Rolls
           return filters;
         })
         .renderLabel(false)
+        .on('renderlet.circleclick', function(chart) {
+          chart.selectAll('circle').on("click", function(datum) { viz.searchByClick(datum.key); });
+        });
       ;
+    },
+
+    searchByClick: function(locationName) {
+      value = (locationName === viz.searched) ? '' : locationName;
+      viz.search(value);
+      d3.select('#filter-bar__search-input').property('value', value);
     },
 
     initTable: function() {
