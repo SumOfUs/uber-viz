@@ -35,7 +35,7 @@
         target    = null
 
     var Y_OFFSET = -62 // MONKEY PATCH
-        X_OFFSET = 60 // MONKEY PATCH
+        X_OFFSET = 0 // MONKEY PATCH
 
     function tip(vis) {
       svg = getSVGNode(vis)
@@ -64,11 +64,18 @@
 
       scrollTop = Y_OFFSET // MONKEY PATCH
       scrollLeft = X_OFFSET // MONKEY PATCH
-      while(i--) nodel.classed(directions[i], false)
-      coords = direction_callbacks.get(dir).apply(this)
+      position = d3.mouse(d3.select('.tooltip-container').node())
+      bounding = nodel.node().getBoundingClientRect();
+      y = Number.parseInt(position[1]) - bounding.height - 10;
+      x = Number.parseInt(position[0]) - bounding.width/2;
+      
+      // while(i--) nodel.classed(directions[i], false)
+      // coords = direction_callbacks.get(dir).apply(this)
       nodel.classed(dir, true).style({
-        top: (coords.top +  poffset[0]) + scrollTop + 'px',
-        left: (coords.left + poffset[1]) + scrollLeft + 'px'
+        // top: (coords.top +  poffset[0]) + scrollTop + 'px',
+        // left: (coords.left + poffset[1]) + scrollLeft + 'px'
+        top: y + 'px',
+        left: x + 'px'
       })
 
       return tip
