@@ -1,0 +1,44 @@
+---
+title: Why everyone hates Uber
+---
+<div class="fixed-bg"></div>
+<div class="uber-viz">
+  <div class="uber-viz__filter-bar filter-bar">
+    <div class="filter-bar__search-box">
+      <input type="text" name="search" id="filter-bar__search-input" placeholder="Where to?" />
+    </div>
+  </div>
+  <div class="uber-viz__map-graphic map-graphic">
+    <div class="tooltip-container"></div>
+    <div id="map-bubbles-chart" class="map-graphic__component"></div>
+    <div id="world-map" class="map-graphic__component"></div>
+  </div>
+  <div class="uber-viz__summary-box summary-box">
+    <div class="incident-card__title">This is why everyone hates Uber</div>
+    <p>
+      <!-- For the last X years, Uber has run a relentless campaign to dominate the global taxi market.
+      The company has been under continuous pressure to expand, no matter the cost.
+      This ruthless disruption has been felt around the world, and those stories are compiled here. -->
+      The data presented here are a non-comprehensive codification of a number of public domain news reports relating to Uber, with a focus on reporting published in June and July 2016. 
+    </p>
+    <p>
+      Filter above by location or category and read about Uber's exploits on the cards. Or click 
+      <a href='/'>here</a> to read about Uber's expansion playbook.
+    </p>
+  </div>
+  <div id="stories-table" class="uber-viz__stories-table"></div>
+</div>
+
+<script type="text/template" id="incident-card-template">
+  <div class="incident-card__top" style="background-color: {{ color }}">
+    <span class="incident-card__category">{{ d.category }}</span>
+    <span class="incident-card__location">{{ d.location }}</span>
+  </div>
+  <div class="incident-card__title">{{ d.tag_line }}</div>
+  <div class="incident-card__main">
+    <div class="incident-card__summary">{{ d.summary }}</div>
+    <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
+  </div>
+</script>
+
+<script type="text/javascript" src="/javascripts/viz.js"></script>

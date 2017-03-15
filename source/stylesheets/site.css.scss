@@ -5,7 +5,7 @@ $open-sans: 'Open Sans', Roboto, Helvetica, Arial, sans;
 $roboto: Roboto, Helvetica, Arial, sans;
 $shadow: 0px 0px 3px 0px rgba(0,0,0,0.5);
 $gray: #efeff1;
-
+$blue: #c3d8e3;
 
 $x_1: 1570px;
 $x_2: 1230px;
@@ -39,7 +39,6 @@ $map-width: 1000px;
       left: calc(50% + #{$left_offset_a});
       width: $w_left;
       top: 20px;
-      z-index: 97;
     }
     .uber-viz__summary-box {
       position: fixed;
@@ -86,7 +85,6 @@ $map-width: 1000px;
       width: 96%;
       left: 2%;
       top: 20px;
-      z-index: 97;
     }
     .uber-viz__summary-box {
       display: none;
@@ -108,6 +106,9 @@ $map-width: 1000px;
     height: 440px;
     margin-left: auto;
     margin-right: auto;
+  }
+  .uber-viz__filter-bar {
+    z-index: 101;
   }
 }
 
@@ -139,11 +140,6 @@ g.axis {
   left: -20px;
 }
 body {
-  background-image: url('/images/bg-tile.png');
-  background-color: #c3d8e3;
-  background-size: 30px 60px;
-  background-repeat: repeat;
-
   font-family: $roboto;
   font-weight: normal;
 }
@@ -192,7 +188,7 @@ h1, h2 , h3, h4, h5, h6 {
   top: 0; bottom: 0;
   left: 0; right: 0;
   background-image: url('/images/bg-tile.png');
-  background-color: #c3d8e3;
+  background-color: $blue;
   background-size: 30px 60px;
   background-repeat: repeat;
 }
@@ -330,3 +326,65 @@ h1, h2 , h3, h4, h5, h6 {
   }
 }
 
+.landing {
+  &__title {
+    font-size: 36px;
+    width: 800px;
+    margin: 30px auto;
+    box-sizing: border-box;
+    @media(max-width: 840px) {
+      width: 92%;
+      margin-left: 4%;
+      margin-right: 4%;
+    }
+    strong {
+      font-family: $roboto;
+      font-weight: normal;
+    }
+  }
+  &__banner {
+    width: 100%;
+    height: 280px;
+    background-image: image_url('explore-banner.png');
+    background-color: $blue;
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    font-size: 36px;
+    transition: font-size 0.1s ease-in-out;
+    &:hover {
+      font-size: 40px;
+    }
+  }
+  &__banner-cta {
+    margin: 100px auto;
+    font-family: $roboto;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    text-shadow: 0px 0px 40px $blue,
+      0px 0px 35px $blue,
+      0px 0px 30px $blue,
+      0px 0px 25px $blue,
+      0px 0px 20px $blue,
+      0px 0px 18px $blue,
+      0px 0px 10px $blue,
+      0px 0px 5px $blue,
+      0px 0px 15px $blue;
+  }
+  a {
+    text-decoration: none;
+  }
+  &__content {
+    width: 620px;
+    margin: 60px auto;
+    line-height: 1.4em;
+    @media(max-width: 640px) {
+      width: 92%;
+      margin-left: 4%;
+      margin-right: 4%;
+    }
+  }
+}

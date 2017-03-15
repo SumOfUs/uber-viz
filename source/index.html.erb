@@ -1,299 +1,63 @@
 ---
-title: How Uber Rolls
+title: Why everyone hates Uber
 ---
-<div class="fixed-bg"></div>
-<div class="uber-viz">
-  <div class="uber-viz__filter-bar filter-bar">
-    <div class="filter-bar__search-box">
-      <input type="text" name="search" id="filter-bar__search-input" placeholder="Where to?" />
+<div class="landing">
+  <h1 class="landing__title">Why everyone hates <strong>Uber</strong></h1>
+  <a href="/map">
+    <div class="landing__banner">
+      <div class="landing__banner-cta">explore the data</div>
     </div>
-  </div>
-  <div class="uber-viz__map-graphic map-graphic">
-    <div class="tooltip-container"></div>
-    <div id="map-bubbles-chart" class="map-graphic__component"></div>
-    <div id="world-map" class="map-graphic__component"></div>
-  </div>
-  <div class="uber-viz__summary-box summary-box">
-    <div class="incident-card__title">This is why everyone hates Uber</div>
+  </a>
+  <div class="landing__content">
     <p>
-      For the last X years, Uber has run a relentless campaign to dominate the global taxi market.
-      The company has been under continuous pressure to expand, no matter the cost.
-      This ruthless disruption has been felt around the world, and those stories are compiled here.
+      Everywhere Uber goes, it brings disruption. Some of that disruption is good: it can be easier and cheaper for city-dwellers to get to and from certain parts of town at certain times of day and night. Yet there are downsides too: the incomes of traditional taxi drivers have been hit hard, and Uber drivers, too, were often disappointed to find that their incomes fall sharply once the company has established market dominance in a particular city.
     </p>
     <p>
-      Filter above by location or category, and read about Uber's exploits on the cards. Or click 
-      <a href='/'>here</a> to read about Uber's expansion playbook.
+      "Their play book globally is the same: First break the law – then use billions of dollars of funding to kill the competition through unrealistic and predatory pricing to consumers and massive incentives to drivers. Then if regulators react to any violation of laws, create huge social media campaigns using the consumer base created through subsidised pricing to put pressure on regulators to change the laws.” -Meru Cabs (India)
     </p>
+    <p>
+      Through our research, we have identified a nine-step “playbook” for Uber’s pattern of behavior across the globe. You can take a closer look at our data collection process on the <a href="/">interactive map</a>.
+    </p>
+    <p>
+      <h2>The Uber playbook</h2>
+    <p>
+    <ol>
+      <li>
+        <h3>Market entry</h3>
+        In most cases, Uber will start to operate in a location without seeking permission from regulators, or officially clarifying the position. They will insist that their model is not catered for in pre-existing regulations, which can hence not be held to apply to them.
+      </li>
+      <li>
+        <h3>Driver recruitment</h3>
+        Uber needs a critical mass of drivers on the street in order to provide a usable service to riders. To achieve this, the outset it offers an attractive deal to drivers, tempting them away from legacy taxi cab firms. Thus, fares are offered at below cost price, effectively funded by a series of multibillion-dollar private investments.
+      </li>
+      <li>
+        <h3>Make riders your political support base</h3>
+        By establishing itself before the authorities have time to react, Uber establishes a political support base amongst city-dwellers who value its convenience and relative affordability. PR stunts – such as free rides, presents for riders, or the delivery of everything from ice cream to puppies – cements the company’s appealing image.
+      </li>
+      <li>
+        <h3>Look for political influence in more traditional ways too</h3>
+        Uber will meanwhile recruit an army of well-connected local lobbyists to press its case
+      </li>
+      <li>
+        <h3>Ignore and/or fight regulations when possible, settle high risk lawsuits</h3>
+        For as long as it can, Uber will fight or ignore regulations, until an official crackdown becomes impossible to ignore. The company will pay the fines and costs of drivers arrested for working without a licence.
+      </li>
+      <li>
+        <h3>Some regulations can be accepted</h3>
+        There are certain things Uber won’t give ground on. But in some cases, such as paying for drivers’ insurance, or even a small tax on fares, it can stand to take a hit.
+      </li>
+      <li>
+        <h3>Brush off protests from your competition</h3>
+        The legacy taxi industry in each location will be hard-hit, often seeing a decline in their income of up to or around 50%. Legacy taxi drivers will often resort to protests, blocking roads, and in extreme cases, violent protests and attacks on taxi drivers. Uber may set up a rapid response private security force in order to rescue its drivers.
+      </li>
+      <li>
+        <h3>Reduce fares, increase commission, increase driver numbers</h3>
+        Once Uber has established local market dominance, it’s time to turn a profit, and that means cutting fares and increasing its commission. It argues that lower fares, which make rides more frequent, can actually increase drivers’ income by reducing downtime, a phenomenon known as ‘Uber math’. But drivers often report that their earnings have been slashed without consultation, or even warning. The company also recruit more and more drivers – a process which adds to waiting times for drivers, but reduces them for riders, and hence drives down income.
+      </li>
+      <li>
+        <h3>Rinse and repeat</h3>
+        Uber is always expanding, and before this process is complete in one location, it’s on to the next.
+      </li>
+    </ol>
   </div>
-  <div id="stories-table" class="uber-viz__stories-table"></div>
 </div>
-
-<script type="text/template" id="incident-card-template">
-  <div class="incident-card__top" style="background-color: {{ color }}">
-    <span class="incident-card__category">{{ d.category }}</span>
-    <span class="incident-card__location">{{ d.location }}</span>
-  </div>
-  <div class="incident-card__title">{{ d.tag_line }}</div>
-  <div class="incident-card__main">
-    <div class="incident-card__summary">{{ d.summary }}</div>
-    <a href="{{ d.link_1 }}" class="incident-card__source" target="_blank">Source</a>
-  </div>
-</script>
-
-<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js'></script>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
-<script src="//d3js.org/d3.geo.projection.v0.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.1/dc.css" />
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.0.1/dc.js"></script>
-<script type="text/javascript" src="/javascripts/d3-tip.js"></script>
-<script type="text/javascript" src="/javascripts/dc-tooltip.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.js" async></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.1.1/masonry.pkgd.min.js" async></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.1/awesomplete.min.css" />
-
-<script type="text/javascript">
-(function(){
-
-
-  var viz = {
-    width: 1060,
-    height: 600,
-    projection: d3.geo.robinson(),    
-    categoryColors: {
-      "Corporate citizenship": '#34a853',
-      'Regulation and lobbying': '#0c0081',
-      'Pay and worker treatment': '#df7c08'
-    },
-    currentCategories: {},
-    mutuallyExclusiveCategories: true,
-    searched: '',
-
-    initialize: function() {
-      viz.path = d3.geo.path().projection(viz.projection);
-
-      viz.mapSvg = d3.select("#world-map").append("svg")
-        .attr("width", viz.width)
-        .attr("height", viz.height);
-
-      viz.bubbleSvg = d3.select('#map-bubbles-chart').append('svg')
-        .attr("width", viz.width)
-        .attr("height", viz.height);
-
-      viz.renderCategories();
-      d3.csv('/javascripts/uber-cities.csv', viz.useCities);
-      d3.json("/javascripts/world-50m.json", viz.usePaths);
-    },
-
-    renderCategories: function() {
-      var size = _.size(viz.categoryColors) + 1;
-      var container = d3.select('.filter-bar');
-      var widthStyle = 'width: '+ (100 / size) + '%;';
-      _.each(_.keys(viz.categoryColors), function(label) {
-        var category = container.append('div')
-          .attr('class', 'filter-bar__category')
-          .attr('style', widthStyle)
-          .attr('data-label', label);
-        category.append('div')
-          .attr('class', 'filter-bar__category-name')
-          .text(label);
-        category.append('div')
-          .attr('class', 'filter-bar__category-color')
-          .attr('style', 'background-color: '+viz.categoryColors[label]+';');
-        category.on('click', viz.toggleCategory);
-      });
-      container.select('.filter-bar__search-box').attr('style', widthStyle);
-    },
-
-    colorTooltip: function(categoryCounts) {
-      var total = _.reduce(_.values(categoryCounts), function(a, b) { return a + b; }, 0);
-      var barHtml = _.map(_.keys(categoryCounts), function(k) {
-        var percent = 100 * categoryCounts[k] / total;
-        return "<div style='background-color: "+viz.categoryColors[k]+"; width: "+percent+"%;''></div>";
-      }).join('');
-      return "<div class='bubble-chart__tooltip-color-bar'>"+barHtml+"</div>";
-    },
-
-    search: function(value) {
-      var value = value.length > 1 ? value : '';
-      viz.searched = value;
-      var re = new RegExp(value, 'i');
-      viz.searchDimension.filter(function(d) {
-        return d.search(re) !== -1;
-      });
-      dc.redrawAll();
-    },
-
-    toggleCategory: function() {
-      var el = d3.select(this);
-      var label = el.attr('data-label');
-      var adding = !(viz.currentCategories[label] === true);
-      if (viz.mutuallyExclusiveCategories) {
-        viz.currentCategories = {};
-        d3.selectAll('.filter-bar__category--selected').classed('filter-bar__category--selected', false);
-      }
-      viz.currentCategories[label] = adding;
-      el.classed('filter-bar__category--selected', adding);
-      var noneSelected = _.values(viz.currentCategories).indexOf(true) === -1;
-      viz.categoryDimension.filter(function(category){
-        return noneSelected || viz.currentCategories[category] === true;
-      });
-      dc.redrawAll();
-    },
-
-    usePaths: function(error, world) {
-      if (error) throw error;
-
-      viz.mapSvg.append('g')
-        .append("path")
-        .datum(topojson.merge(world, world.objects.countries.geometries))
-        .attr("class", "land")
-        .attr("d", viz.path);
-    },
-
-    useCities: function(error, cities){
-      if (error) console.error(error);
-
-      viz.initCrossfilter(cities);
-      viz.initBubbles();
-      viz.initTable();
-      viz.initAutocomplete(cities);
-
-      dc.renderAll();
-      dc.tooltipMixin(viz.mapBubbles);
-      // viz.mapBubbles.tip.elements.on('mouseleave', null);
-    },
-
-    initAutocomplete: function(cities) {
-      viz.autocomplete = new Awesomplete(document.getElementById('filter-bar__search-input'), {
-        list: _.uniq(_.map(cities, function(c) { return c.location; }))
-      });
-      d3.select('#filter-bar__search-input').on('awesomplete-selectcomplete', function() {
-        viz.search(this.value);
-      }).on('keyup', function() {
-        viz.search(this.value);
-      });
-    },
-
-    initCrossfilter: function(cities) {
-      viz.ndx = crossfilter(cities);
-      viz.locationDimension = viz.ndx.dimension(function(d) { return d.location; });
-      viz.searchDimension = viz.ndx.dimension(function(d) { return d.location; });
-      viz.categoryDimension = viz.ndx.dimension(function(d) { return d.category; });
-      viz.locationGroup = viz.locationDimension.group().reduce(
-        function (p, v) {
-          if (p.lat !== v.lat) p.lat = v.lat;
-          if (p.long !== v.long) p.long = v.long;
-          p.count++;
-          if (p.categoryCounts.hasOwnProperty(v.category)) {
-            p.categoryCounts[v.category]++;
-          } else {
-            p.categoryCounts[v.category] = 1;
-          }
-          p.taglines = _.union(p.taglines, [v.tag_line]);
-          p.location = v.location;
-          return p;
-        },
-        function (p, v) {
-          p.count--;
-          p.categoryCounts[v.category]--;
-          if (p.categoryCounts[v.category] < 1) delete p.categoryCounts[v.category];
-          p.taglines = _.difference(p.taglines, [v.tag_line]);
-          return p;
-        },
-        function () {
-          return {
-            lat: null,
-            long: null,
-            categoryCounts: {},
-            taglines: [],
-            count: 0
-          };
-        }
-      );
-    },
-
-    initBubbles: function() {
-      var colorDomain= [], colorRange = [];
-      _.each(viz.categoryColors, function(v, k) {
-        colorDomain.push(k); colorRange.push(v);
-      });
-
-      viz.mapBubbles = dc.bubbleChart('#map-bubbles-chart')
-        .svg(d3.select('#map-bubbles-chart svg'))
-        .width(viz.width*1.08)
-        .height(viz.height*1.08)
-        .dimension(viz.locationDimension)
-        .group(viz.locationGroup)
-        .keyAccessor(function(p) {
-          projected = viz.projection([p.value.long, p.value.lat]);
-          return projected ? projected[0] : 0;
-        })
-        .valueAccessor(function(p) {
-          projected = viz.projection([p.value.long, p.value.lat]);
-          return projected ? -projected[1] : 0;
-        })
-        .radiusValueAccessor(function(p) { return p.value.count; })
-        .x(d3.scale.linear().domain([0, viz.width]))
-        .y(d3.scale.linear().domain([-1 * viz.height, 0]))
-        .minRadius(3)
-        .title(function(p) {
-          if (p.value.taglines.length > 1) {
-            var taglines = '<ul><li>'+p.value.taglines.join('</li><li>')+'</li></ul>';
-          } else {
-            var taglines = '<div class="bubble-chart__single-tagline">'+p.value.taglines[0]+'</div>';
-          }
-          return viz.colorTooltip(p.value.categoryCounts)+"<div class='bubble-chart__taglines'><h4>"+p.value.location+"</h4>"+taglines+"</div>";
-        })
-        .colorAccessor(function(p) {
-          var max = _.chain(p.value.categoryCounts).max().value();
-          category = _.chain(p.value.categoryCounts).invert().value()[max];
-          return category;
-        })
-        .colors(d3.scale.ordinal().domain(colorDomain).range(colorRange))
-        .addFilterHandler(function(filters, filter){
-          filters.length = 0; // empty the array
-          filters.push(filter);
-          return filters;
-        })
-        .renderLabel(false)
-        .on('renderlet.circleclick', function(chart) {
-          chart.selectAll('circle').on("click", function(datum) { viz.searchByClick(datum.key); });
-        });
-      ;
-    },
-
-    searchByClick: function(locationName) {
-      value = (locationName === viz.searched) ? '' : locationName;
-      viz.search(value);
-      d3.select('#filter-bar__search-input').property('value', value);
-    },
-
-    initTable: function() {
-      var incidentTemplate = d3.select('#incident-card-template').html();
-      _.templateSettings = {
-        interpolate: /\{\{(.+?)\}\}/g
-      };
-      var table = dc.dataGrid('#stories-table')
-        .dimension(viz.locationDimension)
-        .group(function(d) { return d; })
-        .size(100)
-        .on('renderlet', function() {
-          if (viz.masonry) viz.masonry.destroy();
-          viz.masonry = new Masonry('.dc-grid-top', {
-            columnWidth: d3.select('.dc-grid-item').node()
-          });
-        })
-        .html(function(d) {
-          return _.template(incidentTemplate)({
-            d: d,
-            color: viz.categoryColors[d.category]
-          });
-        });
-      ;
-    }
-  }
-  viz.initialize();
-})();
-</script>
