@@ -38,11 +38,11 @@ $break: 400px;
   height: 440px;
   width: 1000px;
   left: -30px;
-  margin-top: 70px;
 
   @media(min-width: $break) {
     position: fixed;
     left: -60px;
+    top: 60px;
   }
 }
 .map-graphic__component {
@@ -79,6 +79,25 @@ g.axis {
   }
   @media(max-width: $break) {
     min-height: 1000px;
+  }
+  &__summary-box {
+    background: $gray;
+    box-shadow: $shadow;
+    position: fixed;
+    width: 880px;
+    box-sizing: border-box;
+    top: 500px;
+    left: 20px;
+    .incident-card__title {
+      font-size: 24px;
+      margin: 0 0 16px 0;
+      padding-left: 20px;
+    }
+    p {
+      margin: 0 1px 20px 20px;
+      width: 400px;
+      float: left;
+    }
   }
 }
 body {
