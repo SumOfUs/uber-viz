@@ -5,57 +5,125 @@ $open-sans: 'Open Sans', Roboto, Helvetica, Arial, sans;
 $roboto: Roboto, Helvetica, Arial, sans;
 $shadow: 0px 0px 3px 0px rgba(0,0,0,0.5);
 $gray: #efeff1;
-$break: 400px;
+
+
+$x_1: 1570px;
+$x_2: 1230px;
+$x_3: 1160px;
+$x_4: 475px;
+$x_t: 780px;
+
+$map-width: 1000px;
+
+.uber-viz {
+  .uber-viz__summary-box, .uber-viz__map-graphic,
+  .uber-viz__filter-bar, .uber-viz__stories-table {
+    box-sizing: border-box;
+  }
+  @media(min-width: $x_2) {
+    $w_left: 880px;
+    $w_right: 330px;
+
+    $gutter: 8px;
+    $left_offset_a: -0.5 * ($w_right + $w_left + $gutter);
+    $right_offset_a: $left_offset_a + $w_left + $gutter;
+    $map_left_offset: -100px;
+
+    .uber-viz__map-graphic {
+      position: fixed;
+      left: calc(50% + #{$left_offset_a + $map_left_offset});
+      top: 60px;
+    }
+    .uber-viz__filter-bar {
+      position: fixed;
+      left: calc(50% + #{$left_offset_a});
+      width: $w_left;
+      top: 20px;
+      z-index: 97;
+    }
+    .uber-viz__summary-box {
+      position: fixed;
+      width: $w_left;
+      left: calc(50% + #{$left_offset_a});
+      top: 500px;
+    }
+    .uber-viz__stories-table {
+      position: absolute;
+      width: $w_right;
+      top: 12px;
+      margin: 0;
+      left: calc(50% + #{$right_offset_a});
+    }
+    @media(min-width: $x_1) {
+      // room for twice as many cards on the right
+      $w_right: 680px;
+
+      $left_offset_a: -0.5 * ($w_right + $w_left + $gutter);
+      $right_offset_a: $left_offset_a + $w_left + $gutter;
+
+      .uber-viz__map-graphic {
+        left: calc(50% + #{$left_offset_a + $map_left_offset});
+      }
+      .uber-viz__filter-bar {
+        left: calc(50% + #{$left_offset_a});
+      }
+      .uber-viz__summary-box {
+        left: calc(50% + #{$left_offset_a});
+      }
+      .uber-viz__stories-table {
+        width: $w_right;
+        left: calc(50% + #{$right_offset_a});
+      }
+    }
+  }
+  @media (max-width: $x_2){
+    .uber-viz__map-graphic {
+      position: relative;
+      margin-top: 70px;
+    }
+    .uber-viz__filter-bar {
+      position: fixed;
+      width: 96%;
+      left: 2%;
+      top: 20px;
+      z-index: 97;
+    }
+    .uber-viz__summary-box {
+      display: none;
+    }
+    .uber-viz__stories-table {
+      position: relative;
+      width: 96%;
+      left: 2%;
+      margin-top: 20px;
+    }
+  }
+  @media(max-width: $map-width) {
+    .uber-viz__map-graphic {
+      left: calc(80% - 800px);
+    }
+  }
+  .uber-viz__map-graphic {
+    width: $map-width;
+    height: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
 @import "dc_tooltip";
 .land {
   fill: #fff;
   stroke: #87b1c8;
 }
-#stories-table {
-  width: 100%;
-  margin-top: 20px;
-  margin-left: 0;
-
-  @media(min-width: $break) {
-    width: 330px;
-    margin-top: 0;
-    position: absolute;
-    left: 920px;
-  }
-}
-#stories-table td {
-  border: 1px solid #555;
-}
-.issue-icon {
-  background-image: url('/images/uber-sprite.png');
-
-  width: 100px;
-  height: 100px;
-}
-.map-graphic {
-  position: relative;
-  height: 440px;
-  width: 1000px;
-  left: -30px;
-
-  @media(min-width: $break) {
-    position: fixed;
-    left: -60px;
-    top: 60px;
-  }
+#map-bubbles-chart {
+  z-index: 99;
 }
 .map-graphic__component {
   position: absolute;
   top: 0;
-  // left: -80px;
 }
-#map-bubbles-chart .chart-body {
-  // transform: translateX(0px) translateY(-10px);
-}
-#map-bubbles-chart {
-  z-index: 99;
-}
+
 #world-map {
   z-index: 10;
   height: 440px;
@@ -69,36 +137,6 @@ g.axis {
   position: absolute;
   top: 90px;
   left: -20px;
-}
-.uber-viz {
-  width: 1000px;
-  margin: 20px auto;
-  position: relative;
-  @media(min-width: $break) {
-    position: static;
-  }
-  @media(max-width: $break) {
-    min-height: 1000px;
-  }
-  &__summary-box {
-    background: $gray;
-    box-shadow: $shadow;
-    position: fixed;
-    width: 880px;
-    box-sizing: border-box;
-    top: 500px;
-    left: 20px;
-    .incident-card__title {
-      font-size: 24px;
-      margin: 0 0 16px 0;
-      padding-left: 20px;
-    }
-    p {
-      margin: 0 1px 20px 20px;
-      width: 400px;
-      float: left;
-    }
-  }
 }
 body {
   background-image: url('/images/bg-tile.png');
@@ -121,7 +159,6 @@ h1, h2 , h3, h4, h5, h6 {
   font-family: $open-sans;
   font-weight: 300;
   z-index: 200;
-  // position: fixed !importan
 
   h4 {
     margin: 0;
@@ -160,23 +197,11 @@ h1, h2 , h3, h4, h5, h6 {
   background-repeat: repeat;
 }
 .filter-bar {
-  width: 100%;
   font-family: $open-sans;
   font-weight: 300;
   background: $gray;
-  float: left;
-  font-size: 16px;
   box-shadow: $shadow;
-  position: fixed;
-  width: 1000px;
-  top: 20px;
-  z-index: 100;
-
-  @media(min-width: $break) {
-    position: fixed;
-    left: 30px;
-    width: 880px;
-  }
+  font-size: 16px;
 
   &__category {
     float: left;
@@ -192,10 +217,6 @@ h1, h2 , h3, h4, h5, h6 {
       }
     }
   }
-  &__category-name {
-    z-index: 12;
-    position: relative;
-  }
   &__category-color {
     width: 100%;
     height: 4px;
@@ -206,6 +227,20 @@ h1, h2 , h3, h4, h5, h6 {
   }
   &__search-box {
     float: left;
+  }
+  &__category-name, #filter-bar__search-input {
+    @media(max-width: $x_t) and (min-width: $x_4) {
+      height: 44px;
+    }
+  }
+  &__category, &__search-box {
+    @media(max-width: $x_4) {
+      width: 100% !important; // override inline style
+    }
+  }
+  &__category-name {
+    z-index: 12;
+    position: relative;
   }
   #filter-bar__search-input {
     border: none;
@@ -225,6 +260,21 @@ h1, h2 , h3, h4, h5, h6 {
   }
 }
 
+.summary-box {
+  background: $gray;
+  box-shadow: $shadow;
+  box-sizing: border-box;
+  .incident-card__title {
+    font-size: 24px;
+    margin: 0 0 16px 0;
+    padding-left: 20px;
+  }
+  p {
+    margin: 0 1px 20px 20px;
+    width: 400px;
+    float: left;
+  }
+}
 .dc-grid-label {
   display: none;
 }
@@ -233,6 +283,16 @@ h1, h2 , h3, h4, h5, h6 {
   width: 316px;
   margin: 8px;
   box-shadow: $shadow;
+
+  @media(max-width: $x_2) {
+    width: calc(33% - 16px);
+  }
+  @media(max-width: $x_t) {
+    width: calc(50% - 16px);
+  }
+  @media(max-width: $x_4) {
+    width: calc(100% - 16px);
+  }
 }
 .incident-card {
   &__top, &__title, &__main {
