@@ -33,6 +33,7 @@ $map-width: 1000px;
       position: fixed;
       left: calc(50% + #{$left_offset_a + $map_left_offset});
       top: 60px;
+      z-index: 200;
     }
     .uber-viz__filter-bar {
       position: fixed;
@@ -45,6 +46,7 @@ $map-width: 1000px;
       width: $w_left;
       left: calc(50% + #{$left_offset_a});
       top: 500px;
+      z-index: 300;
     }
     .uber-viz__stories-table {
       position: absolute;
@@ -52,6 +54,7 @@ $map-width: 1000px;
       top: 12px;
       margin: 0;
       left: calc(50% + #{$right_offset_a});
+      z-index: 300;
     }
     @media(min-width: $x_1) {
       // room for twice as many cards on the right
@@ -127,7 +130,7 @@ $map-width: 1000px;
 
 #world-map {
   z-index: 10;
-  height: 440px;
+  height: 420px;
   overflow: hidden;
   transform: translate(27px, 10px);;
 }
