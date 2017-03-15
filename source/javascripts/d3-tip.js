@@ -34,7 +34,7 @@
         point     = null,
         target    = null
 
-    var Y_OFFSET = -92 // MONKEY PATCH
+    var Y_OFFSET = -62 // MONKEY PATCH
         X_OFFSET = 60 // MONKEY PATCH
 
     function tip(vis) {
