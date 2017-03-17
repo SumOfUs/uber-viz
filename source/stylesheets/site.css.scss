@@ -16,6 +16,8 @@ $x_t: 780px;
 $map-width: 1000px;
 
 .uber-viz {
+  overflow: hidden;
+
   .uber-viz__summary-box, .uber-viz__map-graphic,
   .uber-viz__filter-bar, .uber-viz__stories-table {
     box-sizing: border-box;
@@ -81,7 +83,7 @@ $map-width: 1000px;
   @media (max-width: $x_2){
     .uber-viz__map-graphic {
       position: relative;
-      margin-top: 70px;
+      margin-top: 60px;
     }
     .uber-viz__filter-bar {
       position: fixed;
@@ -89,19 +91,27 @@ $map-width: 1000px;
       left: 2%;
       top: 20px;
     }
-    .uber-viz__summary-box {
-      display: none;
-    }
     .uber-viz__stories-table {
       position: relative;
       width: 96%;
       left: 2%;
       margin-top: 20px;
     }
+    .uber-viz__summary-box {
+      width: 96%;
+      margin: 80px 2% 0;
+      overflow: hidden;
+    }
   }
-  @media(max-width: $map-width) {
-    .uber-viz__map-graphic {
-      left: calc(80% - 800px);
+  @media(max-width: $x_t) {
+    .uber-viz__summary-box {
+      margin-top: 100px;
+    }
+  }
+  @media(max-width: $x_4) {
+    .uber-viz__summary-box {
+      margin-top: 200px;
+      height: 340px;
     }
   }
   .uber-viz__map-graphic {
@@ -109,6 +119,45 @@ $map-width: 1000px;
     height: 440px;
     margin-left: auto;
     margin-right: auto;
+
+    @media(max-width: $map-width) and (min-width: $x_t) {
+      left: calc(80% - 800px);
+    }
+    @media(max-width: $x_t) {
+      margin: 0;
+      transform: scale(0.7);
+      transform-origin: left;
+      left: calc(47% - 370px);
+      top: 300px;
+      position: absolute;
+      z-index: 20;
+      overflow: hidden;
+    }
+    @media(max-width: 600px) {
+      transform: scale(0.6);
+      left: calc(48% - 315px);
+    }
+    @media(max-width: $x_4) {
+      transform: scale(0.4);
+      left: calc(48% - 205px);
+      top: 420px;
+    }
+  }
+  .uber-viz__map-spacer{
+    display: none;
+    @media(max-width: $x_t) {
+      display: block;
+      z-index: 25;
+      position: relative;
+      width: 100%;
+      height: 370px;
+    }
+    @media(max-width: 600px) {
+      height: 320px;
+    }
+    @media(max-width: $x_4) {
+      height: 180px;
+    }
   }
   .uber-viz__filter-bar {
     z-index: 101;
@@ -194,6 +243,7 @@ h1, h2 , h3, h4, h5, h6 {
   background-color: $blue;
   background-size: 30px 60px;
   background-repeat: repeat;
+  z-index: -1;
 }
 .filter-bar {
   font-family: $open-sans;
@@ -269,9 +319,12 @@ h1, h2 , h3, h4, h5, h6 {
     padding-left: 20px;
   }
   p {
-    margin: 0 1px 20px 20px;
-    width: 400px;
+    margin: 0 20px 20px 20px;
+    width: calc(50% - 40px);
     float: left;
+    @media(max-width: $x_4) {
+      width: calc(100% - 40px)
+    }
   }
 }
 .dc-grid-label {
