@@ -26,13 +26,31 @@
         .attr("height", viz.height);
 
       viz.renderCategories();
+      viz.setupFancyScroll();
       d3.csv('/javascripts/uber-cities.csv', viz.useCities);
       d3.json("/javascripts/world-50m.json", viz.usePaths);
     },
 
+    setupFancyScroll: function() {
+      var stationaryBar = d3.select('.filter-bar');
+      var animatedBar = d3.select('.uber-viz__animated-filter-bar');
+      window.addEventListener('scroll', function(){ viz.scrolled = true; });
+      window.setInterval(function(){
+        if (!viz.scrolled) return;
+        animatedBar.classed('uber-viz__animated-filter-bar--visible', !viz.checkOnScreen(stationaryBar.node()))
+        viz.scrolled = false;
+      }, 100);
+    },
+
+    checkOnScreen: function(el) {
+      var rect = el.getBoundingClientRect();
+      var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+      return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+    },
+
     renderCategories: function() {
       var size = _.size(viz.categoryColors) + 1;
-      var container = d3.select('.filter-bar');
+      var container = d3.selectAll('.filter-bar');
       var widthStyle = 'width: '+ (100 / size) + '%;';
       _.each(_.keys(viz.categoryColors), function(label) {
         var category = container.append('div')
@@ -60,6 +78,7 @@
     },
 
     search: function(value) {
+      var inputs = d3.selectAll('.filter-bar__search-input').property('value', value);
       var value = value.length > 1 ? value : '';
       viz.searched = value;
       var re = new RegExp(value, 'i');
@@ -70,15 +89,15 @@
     },
 
     toggleCategory: function() {
-      var el = d3.select(this);
-      var label = el.attr('data-label');
+      var label = d3.select(this).attr('data-label');
+      var els = d3.selectAll('[data-label="'+label+'"]');
       var adding = !(viz.currentCategories[label] === true);
       if (viz.mutuallyExclusiveCategories) {
         viz.currentCategories = {};
         d3.selectAll('.filter-bar__category--selected').classed('filter-bar__category--selected', false);
       }
       viz.currentCategories[label] = adding;
-      el.classed('filter-bar__category--selected', adding);
+      els.classed('filter-bar__category--selected', adding);
       var noneSelected = _.values(viz.currentCategories).indexOf(true) === -1;
       viz.categoryDimension.filter(function(category){
         return noneSelected || viz.currentCategories[category] === true;
@@ -110,13 +129,17 @@
     },
 
     initAutocomplete: function(cities) {
-      viz.autocomplete = new Awesomplete(document.getElementById('filter-bar__search-input'), {
-        list: _.uniq(_.map(cities, function(c) { return c.location; }))
+      var inputs = d3.selectAll('.filter-bar__search-input');
+      inputs.each(function() {
+        viz.autocomplete = new Awesomplete(this, {
+          list: _.uniq(_.map(cities, function(c) { return c.location; }))
+        });
       });
-      d3.select('#filter-bar__search-input').on('awesomplete-selectcomplete', function() {
+      inputs.on('awesomplete-selectcomplete', function() {
         viz.search(this.value);
       }).on('keyup', function() {
         viz.search(this.value);
+        return true;
       });
     },
 
@@ -211,7 +234,6 @@
     searchByClick: function(locationName) {
       value = (locationName === viz.searched) ? '' : locationName;
       viz.search(value);
-      d3.select('#filter-bar__search-input').property('value', value);
     },
 
     initTable: function() {
