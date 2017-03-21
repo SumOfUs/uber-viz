@@ -143,7 +143,6 @@
         viz.search(this.value);
       }).on('keyup', function() {
         viz.search(this.value);
-        return true;
       });
     },
 
@@ -264,5 +263,5 @@
       ;
     }
   }
-  viz.initialize();
+  document.addEventListener("DOMContentLoaded", viz.initialize);
 })();
