@@ -167,10 +167,24 @@ $map-width: 1000px;
     }
     position: fixed;
     top: -400px;
-    transition: transform 0.4s ease-in;
+    transition: transform 0.4s ease-in, height 0.2s linear;
+    @media(max-width: $x_4) {
+      height: 214px;
+      .filter-bar__toggle-text--for-compacted { display: none; }
+      .filter-bar__toggle-text--for-expanded { display: inline; }
+      &.filter-bar--compacted {
+        height: 44px;
+        overflow: hidden;
+        .filter-bar__search-box, .filter-bar__category {
+          opacity: 0;
+        }
+        .filter-bar__toggle-text--for-expanded { display: none; }
+        .filter-bar__toggle-text--for-compacted { display: inline; }
+      }
+    }
     &--visible {
       transform: translateY(400px);
-      transition: transform 0.3s ease-out;
+      transition: transform 0.3s ease-out, height 0.2s linear;
     }
   }
 }
@@ -268,17 +282,29 @@ h1, h2 , h3, h4, h5, h6 {
   box-shadow: $shadow;
   font-size: 16px;
 
-  &__category {
+  &__toggle-filter {
+    border-bottom: 1px solid #ccc;
+    @media(min-width: $x_4) {
+      display: none;
+    }
+  }
+  &__category, &__toggle-filter {
     float: left;
     text-align: center;
     cursor: pointer;
     position: relative;
-    transition: color 0.2s ease-out;
+    transition: color 0.2s ease-out, opacity 0.01s linear 0.2s;;
     padding: 10px 0;
+    @media(max-width: $x_4) {
+      border-top: 1px solid #ccc
+    }
     &--selected {
       color: white;
       .filter-bar__category-color {
         height: 100%;
+        @media(max-width: $x_4) {
+          width: 100%;
+        }
       }
     }
     &:hover {
@@ -296,7 +322,13 @@ h1, h2 , h3, h4, h5, h6 {
     transition: height 0.2s ease-out;
     position: absolute;
     bottom: 0;
+    left: 0;
     z-index: 0;
+    @media(max-width: $x_4) {
+      transition: width 0.2s ease-out;
+      height: 100%;
+      width: 8px;
+    }
   }
   &__search-box {
     float: left;
@@ -306,7 +338,7 @@ h1, h2 , h3, h4, h5, h6 {
       height: 44px;
     }
   }
-  &__category, &__search-box {
+  &__category, &__search-box, &__toggle-filter {
     @media(max-width: $x_4) {
       width: 100% !important; // override inline style
     }

@@ -40,6 +40,9 @@
         animatedBar.classed('uber-viz__animated-filter-bar--visible', !viz.checkOnScreen(stationaryBar.node()))
         viz.scrolled = false;
       }, 100);
+      d3.select('.filter-bar__toggle-filter').on('click', function(e){
+        animatedBar.classed('filter-bar--compacted', !animatedBar.classed('filter-bar--compacted'));
+      });
     },
 
     checkOnScreen: function(el) {
