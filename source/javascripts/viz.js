@@ -27,6 +27,7 @@
 
       viz.renderCategories();
       viz.setupFancyScroll();
+      viz.setupClear();
       d3.csv('/javascripts/uber-cities.csv', viz.useCities);
       d3.json("/javascripts/world-50m.json", viz.usePaths);
     },
@@ -84,11 +85,18 @@
       var inputs = d3.selectAll('.filter-bar__search-input').property('value', value);
       var value = value.length > 1 ? value : '';
       viz.searched = value;
+      d3.selectAll('.filter-bar__search-box').classed('filter-bar__search-box--not-empty', value.length > 1);
       var re = new RegExp(value, 'i');
       viz.searchDimension.filter(function(d) {
         return d.search(re) !== -1;
       });
       dc.redrawAll();
+    },
+
+    setupClear: function() {
+      d3.selectAll('.filter-bar__clear-search').on('click', function() {
+        viz.search('');
+      });
     },
 
     toggleCategory: function() {

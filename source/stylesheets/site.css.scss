@@ -294,10 +294,13 @@ h1, h2 , h3, h4, h5, h6 {
     cursor: pointer;
     position: relative;
     transition: color 0.2s ease-out, opacity 0.01s linear 0.2s;;
-    padding: 10px;
+    padding: 10px 0;
     box-sizing: border-box;
     @media(max-width: $x_4) {
       border-top: 1px solid #ccc
+    }
+    @media(max-width: $x_t) {
+      padding: 10px;
     }
     &--selected {
       color: white;
@@ -333,6 +336,20 @@ h1, h2 , h3, h4, h5, h6 {
   }
   &__search-box {
     float: left;
+    position: relative;
+    .filter-bar__clear-search {
+      display: none;
+    }
+    &--not-empty {
+      .filter-bar__clear-search {
+        display: block;
+        position: absolute;
+        right: 10px;
+        top: calc(50% - 14px);
+        font-size: 20px;
+        cursor: pointer;
+      }
+    }
   }
   &__category-name, .filter-bar__search-input {
     @media(max-width: $x_t) and (min-width: $x_4) {
