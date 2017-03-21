@@ -106,6 +106,7 @@
         return noneSelected || viz.currentCategories[category] === true;
       });
       dc.redrawAll();
+      return false;
     },
 
     usePaths: function(error, world) {
