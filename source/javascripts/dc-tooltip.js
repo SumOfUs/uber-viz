@@ -1,3 +1,9 @@
+/*!
+ * dc-addons v0.13.5
+ *
+ * 2016-08-17 08:09:00
+ *
+ */
 (function () {
     'use strict';
 
@@ -57,25 +63,37 @@
                             return title(data);
                         });
 
+
+                    var offsetY = 0;
+
                     _chart.tip.tooltip.offset([-10, 0]);
+                    // _chart.tip.tooltip.direction('e');
 
                     // add the tip to the elements
                     _chart.tip.elements.call(_chart.tip.tooltip);
-                    _chart.tip.elements.on('mouseover', _chart.tip.tooltip.show).on('mouseleave', _chart.tip.tooltip.hide);
+                    _chart.tip.elements.on('mouseleave', _chart.tip.tooltip.hide);
+                    _chart.tip.elements.on('mouseover', function(d, i) {
+                        if (d3.select('.map-graphic').style('position') === 'fixed') {
+                            offsetY = -window.scrollY;
+                        } else {
+                            offsetY = 0;
+                        }
+                        _chart.tip.tooltip.offset([offsetY-10, 0])
+                        console.log(offsetY);
+                        _chart.tip.tooltip.show(d, i);
+                    });
 
                     // remove standard tooltips
                     _chart.tip.elements.each(function () {
                         var el = d3.select(this);
                         var title = el.select('title');
-                        if (title.empty()) {
-                          title = d3.select(this.parentNode).select('title');
-                        }
 
                         if (title.empty()) {
                             return false;
                         }
 
                         el.attr('data-title', title.text());
+                        console.log('remove', title);
                         title.remove();
                     });
                 }

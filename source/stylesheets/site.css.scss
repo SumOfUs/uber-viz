@@ -238,6 +238,10 @@ h1, h2 , h3, h4, h5, h6 {
   font-weight: 300;
   z-index: 200;
 
+  @media(min-width: $x_2) {
+    position: fixed !important; // override inline style
+  }
+
   h4 {
     margin: 0;
     font-size: 18px;
