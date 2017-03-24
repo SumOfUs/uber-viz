@@ -6,6 +6,8 @@
  */
 (function () {
     'use strict';
+    var LONG_TOOLTIPS = ['USA', 'Boston, USA', 'UK'];
+    var POINTER_SIZE = 10;
 
     if (dc.tooltipMixin) {
         return false;
@@ -64,7 +66,7 @@
                         });
 
 
-                    var offsetY = 0;
+                    var offsetY, offsetX, direction;
 
                     _chart.tip.tooltip.offset([-10, 0]);
                     // _chart.tip.tooltip.direction('e');
@@ -74,12 +76,22 @@
                     _chart.tip.elements.on('mouseleave', _chart.tip.tooltip.hide);
                     _chart.tip.elements.on('mouseover', function(d, i) {
                         if (d3.select('.map-graphic').style('position') === 'fixed') {
-                            offsetY = -window.scrollY;
+                            if (LONG_TOOLTIPS.indexOf(d.key) !== -1) {
+                                direction = 'e';
+                                offsetX = POINTER_SIZE;
+                                offsetY = -window.scrollY;
+                            } else {
+                                direction = 'n';
+                                offsetX = 0;
+                                offsetY = -window.scrollY - POINTER_SIZE;
+                            }
                         } else {
-                            offsetY = 0;
+                            offsetY = -POINTER_SIZE;
+                            offsetX = 0;
+                            direction = 'n';
                         }
-                        _chart.tip.tooltip.offset([offsetY-10, 0])
-                        console.log(offsetY);
+                        _chart.tip.tooltip.offset([offsetY, offsetX]);
+                        _chart.tip.tooltip.direction(direction);
                         _chart.tip.tooltip.show(d, i);
                     });
 
@@ -88,12 +100,15 @@
                         var el = d3.select(this);
                         var title = el.select('title');
 
+                        if (title.empty()) { // MONKEY PATCH
+                          title = d3.select(this.parentNode).select('title');
+                        }
+
                         if (title.empty()) {
                             return false;
                         }
 
                         el.attr('data-title', title.text());
-                        console.log('remove', title);
                         title.remove();
                     });
                 }

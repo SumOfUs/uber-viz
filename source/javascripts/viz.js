@@ -200,10 +200,10 @@
 
       viz.mapBubbles = dc.bubbleChart('#map-bubbles-chart')
         .svg(d3.select('#map-bubbles-chart svg'))
-        .width(viz.width*1.08)
-        .height(viz.height*1.08)
+        .width(viz.width*1.07)
+        .height(viz.height*1.07)
         .dimension(viz.locationDimension)
-        .group(viz.locationGroup)
+        .group(viz.locationGroup.order(function(p) { return p.count; }))
         .keyAccessor(function(p) {
           projected = viz.projection([p.value.long, p.value.lat]);
           return projected ? projected[0] : 0;

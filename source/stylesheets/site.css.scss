@@ -40,7 +40,7 @@ $map-width: 1000px;
       position: fixed;
       left: calc(50% + #{$left_offset_a + $map_left_offset});
       top: 60px;
-      z-index: 200;
+      z-index: 100;
     }
     .uber-viz__filter-bar {
       position: fixed;
@@ -187,6 +187,16 @@ $map-width: 1000px;
       transition: transform 0.3s ease-out, height 0.2s linear;
     }
   }
+  .dc-chart {
+    .bubble, .node {
+      fill-opacity: 1;
+      stroke: white;
+      :hover {
+        stroke: black;
+        fill-opacity: 1;
+      }
+    }
+  }
 }
 
 .land {
@@ -237,6 +247,18 @@ h1, h2 , h3, h4, h5, h6 {
   font-family: $open-sans;
   font-weight: 300;
   z-index: 200;
+
+  &.e {
+    &:after, &:before {
+      transform: rotate(90deg);
+      top: calc(50% - 10px);
+      left: -10px;
+    }
+    &:before {
+      border-width: 11px;
+      margin-left: -12px;
+    }
+  }
 
   @media(min-width: $x_2) {
     position: fixed !important; // override inline style
@@ -457,6 +479,14 @@ h1, h2 , h3, h4, h5, h6 {
     background: $gray;
     font-family: $roboto;
     font-weight: normal;
+  }
+  &__source {
+    color: #74b4cb;
+    margin-top: 6px;
+    display: block;
+    &:hover {
+      text-decoration: none;
+    }
   }
 }
 
