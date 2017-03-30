@@ -6,9 +6,9 @@
     height: 600,
     projection: d3.geo.robinson(),    
     categoryColors: {
-      "Corporate citizenship": '#34a853',
-      'Regulation and lobbying': '#0c0081',
-      'Pay and worker treatment': '#df7c08'
+      "Corporate bullying": '#34a853',
+      'Bending the law': '#0c0081',
+      'Driver mistreatment': '#df7c08'
     },
     currentCategories: {},
     mutuallyExclusiveCategories: true,

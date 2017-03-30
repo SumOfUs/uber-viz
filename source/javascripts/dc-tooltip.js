@@ -6,7 +6,7 @@
  */
 (function () {
     'use strict';
-    var LONG_TOOLTIPS = ['USA', 'Boston, USA', 'UK'];
+    var LONG_TOOLTIPS = ['USA', 'Boston, Massachusetts, USA', 'San Francisco, California, USA', 'UK'];
     var POINTER_SIZE = 10;
 
     if (dc.tooltipMixin) {
