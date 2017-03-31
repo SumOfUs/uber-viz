@@ -6,9 +6,6 @@ title: Why everyone hates Uber
   <div class="uber-viz__summary-box summary-box">
     <div class="incident-card__title">This is why everyone hates Uber</div>
     <p>
-      <!-- For the last X years, Uber has run a relentless campaign to dominate the global taxi market.
-      The company has been under continuous pressure to expand, no matter the cost.
-      This ruthless disruption has been felt around the world, and those stories are compiled here. -->
       The data presented here are a non-comprehensive codification of a number of public domain news reports relating to Uber, with a focus on reporting published in June and July 2016. 
     </p>
     <p>
@@ -45,8 +42,8 @@ title: Why everyone hates Uber
 
 <script type="text/template" id="incident-card-template">
   <div class="incident-card__top" style="background-color: {{ color }}">
-    <span class="incident-card__category">{{ d.category }}</span>
-    <span class="incident-card__location">{{ d.location }}</span>
+    <span class="incident-card__location">{{ d.shortLocation }}</span>
+    <span class="incident-card__date">{{ d.formattedDate }}</span>
   </div>
   <div class="incident-card__title">{{ d.tag_line }}</div>
   <div class="incident-card__main">

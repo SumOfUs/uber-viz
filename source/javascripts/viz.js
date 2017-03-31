@@ -7,9 +7,11 @@
     projection: d3.geo.robinson(),    
     categoryColors: {
       "Corporate bullying": '#34a853',
-      'Bending the law': '#0c0081',
-      'Driver mistreatment': '#df7c08'
+      'Driver mistreatment': '#df7c08',
+      'Bending the law': '#0c0081'
     },
+    months: ['January', 'February', 'March', 'April', 'June', 'July',
+      'August', 'September', 'October', 'November', 'December'],
     currentCategories: {},
     mutuallyExclusiveCategories: true,
     searched: '',
@@ -130,6 +132,7 @@
     useCities: function(error, cities){
       if (error) console.error(error);
 
+      cities = viz.preprocess(cities);
       viz.initCrossfilter(cities);
       viz.initBubbles();
       viz.initTable();
@@ -151,6 +154,19 @@
         viz.search(this.value);
       }).on('keyup', function() {
         viz.search(this.value);
+      });
+    },
+
+    preprocess: function(cities) {
+      console.log(cities);
+      return _.map(cities, function(city){
+        city.formattedDate = city.date;
+        parts = city.date.split('/');
+        if (parts.length < 3) return city;
+        city.date = new Date(parts[2], parts[0]-1, parts[1]); // 0-indexed month
+        city.formattedDate = viz.months[city.date.getMonth()] + ' ' + parts[1] + ', ' + parts[2];
+        city.shortLocation = city.location.split(',')[0];
+        return city;
       });
     },
 
@@ -256,6 +272,8 @@
         .dimension(viz.locationDimension)
         .group(function(d) { return d; })
         .size(100)
+        .sortBy(function(d) { return d.date; })
+        .order(d3.descending)
         .on('renderlet', function() {
           if (viz.masonry) viz.masonry.destroy();
           viz.masonry = new Masonry('.dc-grid-top', {

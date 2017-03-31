@@ -463,11 +463,11 @@ h1, h2 , h3, h4, h5, h6 {
     padding-bottom: 7px;
     overflow: hidden;
   }
-  &__category {
-    float: left;
+  &__date {
+    float: right;
   }
   &__location {
-    float: right;
+    float: left;
   }
   &__title {
     background: white;
