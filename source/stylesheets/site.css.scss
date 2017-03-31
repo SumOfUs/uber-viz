@@ -498,6 +498,10 @@ h1, h2 , h3, h4, h5, h6 {
 .landing {
   a {
     color: $dark_blue;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
   &__article {
     background-color: $gray;
@@ -520,6 +524,31 @@ h1, h2 , h3, h4, h5, h6 {
     strong {
       font-family: $roboto;
       font-weight: normal;
+    }
+  }
+  &__header-links {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 20px;
+    padding: 40px 40px 40px 0;
+    @media(max-width: 830px) {
+      position: static;
+      text-align: left;
+      padding: 5px 0 0;
+      overflow: hidden;
+    }
+  }
+  &__header-link {
+    float: right;
+    margin-left: 20px;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    @media(max-width: 830px) {
+      float: left;
+      margin: 0 20px 0 0;
     }
   }
   &__banner {
@@ -554,13 +583,16 @@ h1, h2 , h3, h4, h5, h6 {
       0px 0px 5px $blue,
       0px 0px 15px $blue;
   }
+  a.landing__banner-link:hover {
+    text-decoration: none;
+  }
   a {
     text-decoration: none;
   }
   &__content {
     width: 620px;
     margin: 0 auto;
-    padding: 60px 0;
+    padding: 50px 0;
     line-height: 1.4em;
     position: relative;
     @media(max-width: 640px) {
@@ -697,5 +729,48 @@ h1, h2 , h3, h4, h5, h6 {
         text-decoration: underline;
       }
     }
+  }
+}
+
+.summary-box {
+  &__links {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 16px;
+    padding: 20px;
+    @media(max-width: 700px) {
+      position: static;
+      text-align: left;
+      padding: 5px 0;
+      height: 20px;
+    }
+  }
+  &__title {
+    position: relative;
+  }
+  &__link {
+    float: right;
+    margin-left: 20px;
+    @media(max-width: 700px) {
+      float: left;
+      margin: 0 20px 0 0;
+    }
+    @media(max-width: 350px) {
+      margin: 0 10px 0 0;
+    }
+  }
+  a {
+    color: $dark_blue;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media(max-width: 350px) {
+  .hide-on-tiny {
+    display: none;
   }
 }
