@@ -158,7 +158,6 @@
     },
 
     preprocess: function(cities) {
-      console.log(cities);
       return _.map(cities, function(city){
         city.formattedDate = city.date;
         parts = city.date.split('/');
