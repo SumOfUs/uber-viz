@@ -75,15 +75,16 @@
                     _chart.tip.elements.call(_chart.tip.tooltip);
                     _chart.tip.elements.on('mouseleave', _chart.tip.tooltip.hide);
                     _chart.tip.elements.on('mouseover', function(d, i) {
+                        var scrollY = window.scrollY || window.pageYOffset;
                         if (d3.select('.map-graphic').style('position') === 'fixed') {
                             if (LONG_TOOLTIPS.indexOf(d.key) !== -1) {
                                 direction = 'e';
                                 offsetX = POINTER_SIZE;
-                                offsetY = -window.scrollY;
+                                offsetY = -scrollY;
                             } else {
                                 direction = 'n';
                                 offsetX = 0;
-                                offsetY = -window.scrollY - POINTER_SIZE;
+                                offsetY = -scrollY - POINTER_SIZE;
                             }
                         } else {
                             offsetY = -POINTER_SIZE;
